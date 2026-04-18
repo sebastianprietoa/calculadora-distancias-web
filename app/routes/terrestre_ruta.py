@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 from pathlib import Path
 
 from fastapi import APIRouter, File, HTTPException, Request, UploadFile
@@ -8,6 +9,8 @@ from fastapi.templating import Jinja2Templates
 
 from app.services.terrestre_ruta_service import TerrestreRutaService
 from app.utils.excel import dataframe_to_excel_bytes, read_uploaded_table
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter()
 templates = Jinja2Templates(directory=str(Path(__file__).resolve().parents[1] / "templates"))
@@ -38,6 +41,8 @@ async def process_terrestre_ruta(file: UploadFile = File(...)):
             headers={"Content-Disposition": 'attachment; filename="terrestre_ruta_output.xlsx"'},
         )
     except ValueError as exc:
+        logger.warning("Error de validación procesando %s: %s", file.filename, exc)
         raise HTTPException(status_code=400, detail=str(exc)) from exc
     except Exception as exc:
-        raise HTTPException(status_code=500, detail=f"Error interno: {exc}") from exc
+        logger.exception("Error interno procesando %s", file.filename)
+        raise HTTPException(status_code=500, detail="Error interno procesando archivo") from exc

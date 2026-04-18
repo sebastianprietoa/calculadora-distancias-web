@@ -7,7 +7,7 @@ import pandas as pd
 import requests
 
 from app.utils.text import normalize_text
-from app.utils.validators import require_columns
+from app.utils.validators import is_blank, require_columns
 
 BASE_DIR = Path(__file__).resolve().parents[2]
 CACHE_FILE = BASE_DIR / "data" / "cache" / "geocache.csv"
@@ -62,7 +62,7 @@ class CoordenadasService:
             ciudad = row.get("Ciudad")
             pais = row.get("País")
 
-            if pd.isna(ciudad) or pd.isna(pais) or not str(ciudad).strip() or not str(pais).strip():
+            if is_blank(ciudad) or is_blank(pais):
                 results.append(
                     {
                         **row.to_dict(),

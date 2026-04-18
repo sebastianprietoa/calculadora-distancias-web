@@ -145,3 +145,17 @@ def test_safe_json_float_handles_inf_nan_and_invalid_values():
     assert _safe_json_float(float("nan")) == 0.0
     assert _safe_json_float("abc") == 0.0
     assert _safe_json_float(12.345) == 12.35
+
+
+def test_iata_service_supports_route_and_sums_segments():
+    service = IATAService()
+    route_df = pd.DataFrame([{"IATA_origen": "LIM/SCL/LIM", "IATA_destino": None}])
+    pair_df = pd.DataFrame([{"IATA_origen": "LIM", "IATA_destino": "SCL"}])
+
+    route_result = service.process(route_df).iloc[0]
+    pair_result = service.process(pair_df).iloc[0]
+
+    assert route_result["Estado"] == "OK"
+    assert route_result["Tramos_calculados"] == 2
+    assert route_result["Ruta_IATA_norm"] == "LIM/SCL/LIM"
+    assert route_result["Distancia_km"] == round(pair_result["Distancia_km"] * 2, 2)

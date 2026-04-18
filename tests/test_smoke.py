@@ -5,6 +5,7 @@ import pandas as pd
 from fastapi import UploadFile
 
 from app.main import healthcheck
+from app.routes.coordenadas import _json_safe_df
 from app.services.coordenadas_service import CoordenadasService
 from app.services.iata_service import IATAService
 from app.services.terrestre_ruta_service import TerrestreRutaService
@@ -129,3 +130,11 @@ def test_read_uploaded_table_accepts_csv_content():
 
     assert list(df.columns) == ["Ciudad", "País"]
     assert df.iloc[0]["Ciudad"] == "Santiago"
+
+
+def test_json_safe_df_replaces_nan_and_inf():
+    df = pd.DataFrame([{"valor": float("inf"), "otro": float("nan")}])
+    safe = _json_safe_df(df)
+
+    assert safe.iloc[0]["valor"] is None
+    assert safe.iloc[0]["otro"] is None

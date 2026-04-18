@@ -59,3 +59,19 @@ data/
 
 Este repo incluye `Procfile`, `railway.json` y `Dockerfile`.
 Solo debes conectar el repo en Railway y desplegar.
+
+
+## UI Streamlit (opcional para pruebas internas)
+
+Además de la UI FastAPI/Jinja, puedes abrir una UI avanzada para Coordenadas con Streamlit:
+
+```bash
+streamlit run streamlit_app.py
+```
+
+La UI Streamlit incluye:
+- Progreso inicial (0%)
+- Panel de alertas pre-descarga
+- Resumen inicial "Esperando archivo"
+- Validación previa antes de descargar el XLSX
+

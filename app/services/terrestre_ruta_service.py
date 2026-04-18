@@ -3,7 +3,7 @@ from __future__ import annotations
 import pandas as pd
 import requests
 
-from app.utils.validators import require_columns
+from app.utils.validators import parse_float_in_range, require_columns
 
 
 class TerrestreRutaService:
@@ -28,10 +28,10 @@ class TerrestreRutaService:
 
         for _, row in df.iterrows():
             try:
-                lat_ori = float(row["Latitud ori"])
-                lon_ori = float(row["Longitud ori"])
-                lat_des = float(row["Latitud des"])
-                lon_des = float(row["Longitud des"])
+                lat_ori = parse_float_in_range(row["Latitud ori"], -90, 90)
+                lon_ori = parse_float_in_range(row["Longitud ori"], -180, 180)
+                lat_des = parse_float_in_range(row["Latitud des"], -90, 90)
+                lon_des = parse_float_in_range(row["Longitud des"], -180, 180)
             except Exception:
                 results.append(
                     {

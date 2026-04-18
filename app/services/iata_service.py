@@ -70,6 +70,7 @@ class IATAService:
                         "Aeropuerto_destino": None,
                         "Ciudad_destino": None,
                         "Pais_destino": None,
+                        "Distancia_km": None,
                         "Distancia_km_aerea": None,
                         "Estado": "IATA NO ENCONTRADO",
                     }
@@ -98,6 +99,7 @@ class IATAService:
                     "Aeropuerto_destino": destination_airport["airport_name"],
                     "Ciudad_destino": destination_airport["city"],
                     "Pais_destino": destination_airport["country"],
+                    "Distancia_km": round(distance_km, 2),
                     "Distancia_km_aerea": round(distance_km, 2),
                     "Estado": "OK",
                 }

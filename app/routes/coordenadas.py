@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+import math
 from pathlib import Path
 
 from fastapi import APIRouter, File, HTTPException, Request, UploadFile
@@ -23,6 +24,16 @@ BASE_DIR = Path(__file__).resolve().parents[2]
 def _json_safe_df(df: pd.DataFrame) -> pd.DataFrame:
     sanitized = df.replace([np.inf, -np.inf], np.nan).astype(object)
     return sanitized.where(pd.notna(sanitized), None)
+
+
+def _safe_json_float(value: object, default: float = 0.0) -> float:
+    try:
+        number = float(value)
+    except (TypeError, ValueError):
+        return default
+    if not math.isfinite(number):
+        return default
+    return round(number, 2)
 
 
 
@@ -51,7 +62,9 @@ async def preview_coordenadas(file: UploadFile = File(...)):
         errors_count = int((result_df["Estado"].str.startswith("ERROR", na=False)).sum()) if total else 0
         missing_count = int((result_df["Estado"] == "FALTAN DATOS").sum()) if total else 0
 
-        mean_precision = round(float(result_df.get("Precision_pct", 0).fillna(0).mean()), 2) if total else 0.0
+        precision_series = pd.to_numeric(result_df.get("Precision_pct", 0), errors="coerce")
+        precision_series = precision_series.replace([np.inf, -np.inf], np.nan).fillna(0)
+        mean_precision = _safe_json_float(precision_series.mean()) if total else 0.0
 
         json_ready_df = _json_safe_df(result_df)
         rows_preview = json_ready_df.head(200).to_dict(orient="records")

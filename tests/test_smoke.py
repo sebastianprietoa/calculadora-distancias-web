@@ -5,7 +5,7 @@ import pandas as pd
 from fastapi import UploadFile
 
 from app.main import healthcheck
-from app.routes.coordenadas import _json_safe_df
+from app.routes.coordenadas import _json_safe_df, _safe_json_float
 from app.services.coordenadas_service import CoordenadasService
 from app.services.iata_service import IATAService
 from app.services.terrestre_ruta_service import TerrestreRutaService
@@ -138,3 +138,10 @@ def test_json_safe_df_replaces_nan_and_inf():
 
     assert safe.iloc[0]["valor"] is None
     assert safe.iloc[0]["otro"] is None
+
+
+def test_safe_json_float_handles_inf_nan_and_invalid_values():
+    assert _safe_json_float(float("inf")) == 0.0
+    assert _safe_json_float(float("nan")) == 0.0
+    assert _safe_json_float("abc") == 0.0
+    assert _safe_json_float(12.345) == 12.35

@@ -12,6 +12,13 @@
   <button id="iata-download" class="button secondary" type="button" disabled>Descargar resultado XLSX</button>
 </form>
 
+<section id="iata-progress-card" class="card">
+  <h3>Procesando archivo</h3>
+  <div class="progress-track"><div id="iata-progress-bar" class="progress-bar" style="width: 0%"></div></div>
+  <p id="iata-progress-text">0% completado</p>
+  <p id="iata-eta-text">Tiempo estimado restante: --</p>
+</section>
+
 <section class="card"><h3>Estado inicial</h3><p id="iata-status">Esperando archivo</p></section>
 <section id="iata-alerts" class="card alert-card"><h3>Alertas pre-descarga</h3><p id="iata-alert-text">Aún no hay alertas.</p><ul id="iata-alert-list"></ul><button id="iata-ack" class="button" type="button">Entendido, descargar de todos modos</button></section>
 <section class="card"><h3>Resumen</h3><div id="iata-summary" class="summary-grid"><div class="summary-item"><strong>Estado</strong><span>Esperando archivo</span></div></div></section>
@@ -32,6 +39,18 @@ const missingTable = document.getElementById('iata-missing-table');
 const downloadBtn = document.getElementById('iata-download');
 const ackBtn = document.getElementById('iata-ack');
 let currentFile = null;
+let progressInterval = null;
+const progressBar = document.getElementById('iata-progress-bar');
+const progressText = document.getElementById('iata-progress-text');
+const etaText = document.getElementById('iata-eta-text');
+
+
+function setProgress(value, etaSeconds) {
+  const pct = Math.max(0, Math.min(100, value));
+  progressBar.style.width = `${pct}%`;
+  progressText.textContent = `${Math.round(pct)}% completado`;
+  etaText.textContent = `Tiempo estimado restante: ${Number.isFinite(etaSeconds) ? etaSeconds.toFixed(1) + 's' : '--'}`;
+}
 
 function buildTable(tableElement, rows) {
   tableElement.innerHTML = '';
@@ -83,10 +102,56 @@ form.addEventListener('submit', async (e) => {
   downloadBtn.disabled = true;
   alertList.innerHTML = '';
   const fd = new FormData(); fd.append('file', file);
-  const res = await fetch('/api/iata/preview', {method: 'POST', body: fd});
-  const payload = await res.json();
-  if (!res.ok) return alert(payload.detail || 'Error procesando archivo');
+  const startedAt = Date.now();
+  const etaTotal = Math.max(5, Math.min(60, file.size / 250000));
+  setProgress(1, etaTotal);
 
+  const xhr = new XMLHttpRequest();
+  xhr.open('POST', '/api/iata/preview');
+
+  xhr.upload.onprogress = (evt) => {
+    if (evt.lengthComputable) {
+      const uploadPct = (evt.loaded / evt.total) * 70;
+      const elapsed = (Date.now() - startedAt) / 1000;
+      setProgress(uploadPct, Math.max(0, etaTotal - elapsed));
+    }
+  };
+
+  progressInterval = setInterval(() => {
+    const current = parseFloat(progressBar.style.width || '0');
+    const elapsed = (Date.now() - startedAt) / 1000;
+    if (current < 95) setProgress(current + 1, Math.max(0, etaTotal - elapsed));
+  }, 350);
+
+  const payload = await new Promise((resolve, reject) => {
+    xhr.onload = () => {
+      clearInterval(progressInterval);
+      progressInterval = null;
+      if (xhr.status < 200 || xhr.status >= 300) {
+        try {
+          const err = JSON.parse(xhr.responseText);
+          reject(new Error(err.detail || 'Error procesando archivo'));
+        } catch (_e) {
+          reject(new Error('Error procesando archivo'));
+        }
+        return;
+      }
+      try {
+        resolve(JSON.parse(xhr.responseText));
+      } catch (_e) {
+        reject(new Error('Respuesta inválida del servidor'));
+      }
+    };
+    xhr.onerror = () => {
+      clearInterval(progressInterval);
+      progressInterval = null;
+      reject(new Error('No fue posible conectar con el servidor'));
+    };
+    xhr.send(fd);
+  }).catch((err) => { alert(err.message); return null; });
+
+  if (!payload) return;
+  setProgress(100, 0);
   statusEl.textContent = 'Validación completada';
   renderSummary(payload.summary || {});
   buildTable(previewTable, payload.rows_preview || []);

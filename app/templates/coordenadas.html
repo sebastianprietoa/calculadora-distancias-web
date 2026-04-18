@@ -8,11 +8,11 @@
 
 <form id="coordenadas-form" class="upload-form" enctype="multipart/form-data">
   <input id="coordenadas-file" type="file" name="file" accept=".xlsx,.csv" required>
-  <button class="button" type="submit">Validar y procesar</button>
+  <button class="button" type="submit">Validar archivo (sin descargar)</button>
   <button id="download-result" class="button secondary" type="button" disabled>Descargar resultado XLSX</button>
 </form>
 
-<section id="progress-card" class="card hidden-block">
+<section id="progress-card" class="card">
   <h3>Procesando archivo</h3>
   <div class="progress-track">
     <div id="progress-bar" class="progress-bar" style="width: 0%"></div>
@@ -21,16 +21,16 @@
   <p id="eta-text">Tiempo estimado restante: --</p>
 </section>
 
-<section id="alerts-card" class="card hidden-block alert-card">
+<section id="alerts-card" class="card alert-card">
   <h3>Alertas de validación antes de descargar</h3>
-  <p id="alerts-summary"></p>
+  <p id="alerts-summary">Aún no hay alertas. Sube un archivo y valida antes de descargar.</p>
   <ul id="alerts-list"></ul>
   <button id="acknowledge-alerts" class="button" type="button">Entendido, descargar de todos modos</button>
 </section>
 
-<section id="summary-card" class="card hidden-block">
+<section id="summary-card" class="card">
   <h3>Resumen de validación</h3>
-  <div id="summary-grid" class="summary-grid"></div>
+  <div id="summary-grid" class="summary-grid"><div class="summary-item"><strong>Estado</strong><span>Esperando archivo</span></div></div>
 </section>
 
 <section id="missing-card" class="card hidden-block">
@@ -129,7 +129,7 @@
 
     alertsList.innerHTML = '';
     if (totalIssues === 0) {
-      alertsCard.classList.add('hidden-block');
+      alertsSummary.textContent = 'Sin alertas: puedes descargar el resultado.';
       downloadButton.disabled = false;
       return;
     }
@@ -143,12 +143,11 @@
       alertsList.appendChild(item);
     });
 
-    alertsCard.classList.remove('hidden-block');
     downloadButton.disabled = true;
   }
 
   acknowledgeAlertsBtn.addEventListener('click', () => {
-    alertsCard.classList.add('hidden-block');
+    alertsSummary.textContent = 'Alertas reconocidas. Puedes descargar de todos modos.';
     downloadButton.disabled = false;
   });
 
@@ -195,14 +194,11 @@
     }
 
     currentFile = file;
-    summaryCard.classList.add('hidden-block');
     previewCard.classList.add('hidden-block');
     missingCard.classList.add('hidden-block');
-    alertsCard.classList.add('hidden-block');
     alertsList.innerHTML = '';
     downloadButton.disabled = true;
 
-    progressCard.classList.remove('hidden-block');
     const estimatedTotalSeconds = Math.max(5, Math.min(90, file.size / 300000));
     const startedAt = Date.now();
     setProgress(1, estimatedTotalSeconds);
@@ -252,7 +248,6 @@
       renderAlerts(payload);
       buildTable(previewTable, payload.rows_preview || []);
       buildTable(missingTable, payload.missing_preview || []);
-      summaryCard.classList.remove('hidden-block');
       previewCard.classList.remove('hidden-block');
       missingCard.classList.remove('hidden-block');
       const summary = payload.summary || {};

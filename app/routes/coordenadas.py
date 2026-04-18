@@ -4,6 +4,7 @@ import logging
 from pathlib import Path
 
 from fastapi import APIRouter, File, HTTPException, Request, UploadFile
+import numpy as np
 import pandas as pd
 from fastapi.responses import HTMLResponse, FileResponse, JSONResponse, StreamingResponse
 from fastapi.templating import Jinja2Templates
@@ -17,6 +18,12 @@ router = APIRouter()
 templates = Jinja2Templates(directory=str(Path(__file__).resolve().parents[1] / "templates"))
 service = CoordenadasService()
 BASE_DIR = Path(__file__).resolve().parents[2]
+
+
+def _json_safe_df(df: pd.DataFrame) -> pd.DataFrame:
+    sanitized = df.replace([np.inf, -np.inf], np.nan).astype(object)
+    return sanitized.where(pd.notna(sanitized), None)
+
 
 
 @router.get("/coordenadas", response_class=HTMLResponse)
@@ -46,7 +53,7 @@ async def preview_coordenadas(file: UploadFile = File(...)):
 
         mean_precision = round(float(result_df.get("Precision_pct", 0).fillna(0).mean()), 2) if total else 0.0
 
-        json_ready_df = result_df.where(pd.notna(result_df), None)
+        json_ready_df = _json_safe_df(result_df)
         rows_preview = json_ready_df.head(200).to_dict(orient="records")
         missing_preview = json_ready_df[json_ready_df["Estado"] != "OK"].head(100).to_dict(orient="records")
 

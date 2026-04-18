@@ -191,3 +191,11 @@ td { color: #d9f4e7; }
   margin-bottom: 4px;
   color: #ffe1b9;
 }
+
+select {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 10px;
+  color: var(--muted);
+  background: rgba(7, 16, 12, 0.9);
+}

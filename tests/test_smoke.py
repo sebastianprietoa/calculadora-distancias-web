@@ -101,9 +101,9 @@ def test_terrestre_service_marks_invalid_coordinates_without_calling_osrm(monkey
     df = pd.DataFrame(
         [{"Latitud ori": 95, "Longitud ori": -70, "Latitud des": -12, "Longitud des": -77}]
     )
-    result = service.process(df)
+    result = service.process(df, mode="coordenadas")
 
-    assert result.iloc[0]["Estado"] == "COORDENADAS INVÁLIDAS"
+    assert result.iloc[0]["Estado"].startswith("ENTRADA INVÁLIDA")
 
 
 def test_read_uploaded_table_rejects_empty_file():
@@ -159,3 +159,29 @@ def test_iata_service_supports_route_and_sums_segments():
     assert route_result["Tramos_calculados"] == 2
     assert route_result["Ruta_IATA_norm"] == "LIM/SCL/LIM"
     assert route_result["Distancia_km"] == round(pair_result["Distancia_km"] * 2, 2)
+
+
+def test_terrestre_service_text_mode_uses_country_capital_when_city_missing(monkeypatch):
+    service = TerrestreRutaService()
+
+    calls = []
+
+    def _fake_geocode(query):
+        calls.append(query)
+        if "capital de Chile" in query:
+            return (-33.45, -70.66)
+        if "capital de Peru" in query:
+            return (-12.0464, -77.0428)
+        return None
+
+    monkeypatch.setattr(service, "_geocode", _fake_geocode)
+    monkeypatch.setattr(service, "_query_osrm", lambda *args, **kwargs: {"distance": 10000, "duration": 1200})
+
+    df = pd.DataFrame([{"Pais ori": "Chile", "Pais des": "Peru"}])
+    result = service.process(df, mode="direccion")
+
+    assert result.iloc[0]["Estado"] == "OK"
+    assert result.iloc[0]["Modo_entrada"] == "direccion"
+    assert "capital de Chile" in result.iloc[0]["Consulta_ori"]
+    assert "capital de Peru" in result.iloc[0]["Consulta_des"]
+    assert any("capital de Chile" in q for q in calls)

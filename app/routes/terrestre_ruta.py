@@ -4,7 +4,7 @@ import logging
 import math
 from pathlib import Path
 
-from fastapi import APIRouter, File, HTTPException, Request, UploadFile
+from fastapi import APIRouter, File, Form, HTTPException, Request, UploadFile
 import numpy as np
 import pandas as pd
 from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, StreamingResponse
@@ -48,10 +48,10 @@ def download_template():
 
 
 @router.post("/api/terrestre-ruta/preview")
-async def preview_terrestre_ruta(file: UploadFile = File(...)):
+async def preview_terrestre_ruta(file: UploadFile = File(...), mode: str = Form("auto")):
     try:
         df = await read_uploaded_table(file)
-        result_df = service.process(df)
+        result_df = service.process(df, mode=mode)
 
         total = int(len(result_df))
         ok_count = int((result_df["Estado"] == "OK").sum()) if total else 0
@@ -90,10 +90,10 @@ async def preview_terrestre_ruta(file: UploadFile = File(...)):
 
 
 @router.post("/api/terrestre-ruta")
-async def process_terrestre_ruta(file: UploadFile = File(...)):
+async def process_terrestre_ruta(file: UploadFile = File(...), mode: str = Form("auto")):
     try:
         df = await read_uploaded_table(file)
-        result_df = service.process(df)
+        result_df = service.process(df, mode=mode)
         excel_bytes = dataframe_to_excel_bytes(result_df, sheet_name="terrestre_ruta_output")
         return StreamingResponse(
             iter([excel_bytes]),

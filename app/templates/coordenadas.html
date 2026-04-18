@@ -21,6 +21,13 @@
   <p id="eta-text">Tiempo estimado restante: --</p>
 </section>
 
+<section id="alerts-card" class="card hidden-block alert-card">
+  <h3>Alertas de validación antes de descargar</h3>
+  <p id="alerts-summary"></p>
+  <ul id="alerts-list"></ul>
+  <button id="acknowledge-alerts" class="button" type="button">Entendido, descargar de todos modos</button>
+</section>
+
 <section id="summary-card" class="card hidden-block">
   <h3>Resumen de validación</h3>
   <div id="summary-grid" class="summary-grid"></div>
@@ -49,6 +56,10 @@
   const etaText = document.getElementById('eta-text');
   const summaryCard = document.getElementById('summary-card');
   const summaryGrid = document.getElementById('summary-grid');
+  const alertsCard = document.getElementById('alerts-card');
+  const alertsSummary = document.getElementById('alerts-summary');
+  const alertsList = document.getElementById('alerts-list');
+  const acknowledgeAlertsBtn = document.getElementById('acknowledge-alerts');
   const previewCard = document.getElementById('preview-card');
   const previewTable = document.getElementById('preview-table');
   const missingCard = document.getElementById('missing-card');
@@ -111,6 +122,36 @@
     )).join('');
   }
 
+  function renderAlerts(payload) {
+    const summary = payload.summary || {};
+    const problematicRows = payload.missing_preview || [];
+    const totalIssues = (summary.not_found || 0) + (summary.missing || 0) + (summary.errors || 0);
+
+    alertsList.innerHTML = '';
+    if (totalIssues === 0) {
+      alertsCard.classList.add('hidden-block');
+      downloadButton.disabled = false;
+      return;
+    }
+
+    alertsSummary.textContent = `Se detectaron ${totalIssues} filas con observaciones antes de descargar.`;
+
+    problematicRows.slice(0, 10).forEach((row, idx) => {
+      const item = document.createElement('li');
+      const consulta = row.Consulta || `${row.Ciudad || '-'}, ${row['País'] || '-'}`;
+      item.textContent = `#${idx + 1}: ${consulta} → ${row.Estado || 'Sin estado'}`;
+      alertsList.appendChild(item);
+    });
+
+    alertsCard.classList.remove('hidden-block');
+    downloadButton.disabled = true;
+  }
+
+  acknowledgeAlertsBtn.addEventListener('click', () => {
+    alertsCard.classList.add('hidden-block');
+    downloadButton.disabled = false;
+  });
+
   async function triggerDownload() {
     if (!currentFile) return;
 
@@ -157,6 +198,8 @@
     summaryCard.classList.add('hidden-block');
     previewCard.classList.add('hidden-block');
     missingCard.classList.add('hidden-block');
+    alertsCard.classList.add('hidden-block');
+    alertsList.innerHTML = '';
     downloadButton.disabled = true;
 
     progressCard.classList.remove('hidden-block');
@@ -206,12 +249,16 @@
 
       setProgress(100, 0);
       renderSummary(payload.summary || {});
+      renderAlerts(payload);
       buildTable(previewTable, payload.rows_preview || []);
       buildTable(missingTable, payload.missing_preview || []);
       summaryCard.classList.remove('hidden-block');
       previewCard.classList.remove('hidden-block');
       missingCard.classList.remove('hidden-block');
-      downloadButton.disabled = false;
+      const summary = payload.summary || {};
+      if ((summary.not_found || 0) === 0 && (summary.missing || 0) === 0 && (summary.errors || 0) === 0) {
+        downloadButton.disabled = false;
+      }
     };
 
     xhr.onerror = () => {

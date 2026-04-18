@@ -109,3 +109,17 @@ th, td {
 }
 th { background: #f3f6fc; }
 .row-warning { background: #fff7ed; }
+.alert-card {
+  border-color: #f59e0b;
+  background: #fffbeb;
+}
+.alert-card h3 {
+  color: #92400e;
+}
+#alerts-list {
+  margin: 8px 0 14px;
+  padding-left: 18px;
+}
+#alerts-list li {
+  margin-bottom: 4px;
+}

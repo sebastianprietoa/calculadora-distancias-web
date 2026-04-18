@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Viajes IATA</h1>
+<p>Sube un archivo .xlsx o .csv con las columnas <strong>IATA_origen</strong> y <strong>IATA_destino</strong>.</p>
+<div class="actions">
+  <a class="button secondary" href="/templates/iata">Descargar plantilla</a>
+</div>
+<form class="upload-form" action="/api/iata" method="post" enctype="multipart/form-data">
+  <input type="file" name="file" accept=".xlsx,.csv" required>
+  <button class="button" type="submit">Procesar archivo</button>
+</form>
+{% endblock %}

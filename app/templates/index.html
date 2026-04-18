@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="hero">
+  <h1>Herramientas internas</h1>
+  <p>Versión inicial para probar las herramientas de coordenadas, vuelos IATA y ruta terrestre.</p>
+</section>
+<section class="grid">
+  {% for tool in tools %}
+  <article class="card">
+    <h2>{{ tool.name }}</h2>
+    <p>{{ tool.description }}</p>
+    <a class="button" href="{{ tool.path }}">Abrir</a>
+  </article>
+  {% endfor %}
+</section>
+{% endblock %}

@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Terrestre por ruta</h1>
+<p>Sube un archivo .xlsx o .csv con las columnas <strong>Latitud ori</strong>, <strong>Longitud ori</strong>, <strong>Latitud des</strong> y <strong>Longitud des</strong>.</p>
+<div class="actions">
+  <a class="button secondary" href="/templates/terrestre-ruta">Descargar plantilla</a>
+</div>
+<form class="upload-form" action="/api/terrestre-ruta" method="post" enctype="multipart/form-data">
+  <input type="file" name="file" accept=".xlsx,.csv" required>
+  <button class="button" type="submit">Procesar archivo</button>
+</form>
+{% endblock %}

@@ -6,6 +6,7 @@ from fastapi import UploadFile
 
 from app.main import healthcheck
 from app.routes.coordenadas import _json_safe_df, _safe_json_float
+from app.routes.terrestre_ruta import _build_template_df
 from app.services.coordenadas_service import CoordenadasService
 from app.services.iata_service import IATAService
 from app.services.terrestre_ruta_service import TerrestreRutaService
@@ -185,3 +186,14 @@ def test_terrestre_service_text_mode_uses_country_capital_when_city_missing(monk
     assert "capital de Chile" in result.iloc[0]["Consulta_ori"]
     assert "capital de Peru" in result.iloc[0]["Consulta_des"]
     assert any("capital de Chile" in q for q in calls)
+
+
+def test_terrestre_template_builder_supports_both_modes():
+    coords_cols = list(_build_template_df("coordenadas").columns)
+    text_cols = list(_build_template_df("direccion").columns)
+    auto_cols = list(_build_template_df("auto").columns)
+
+    assert coords_cols == ["Latitud ori", "Longitud ori", "Latitud des", "Longitud des"]
+    assert text_cols == ["Direccion ori", "Ciudad ori", "Pais ori", "Direccion des", "Ciudad des", "Pais des"]
+    assert set(coords_cols).issubset(set(auto_cols))
+    assert set(text_cols).issubset(set(auto_cols))

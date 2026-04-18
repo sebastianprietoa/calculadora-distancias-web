@@ -3,7 +3,7 @@
 <h1>Terrestre por ruta</h1>
 <p>Sube .xlsx/.csv con coordenadas (<strong>Latitud ori</strong>, <strong>Longitud ori</strong>, <strong>Latitud des</strong>, <strong>Longitud des</strong>) o con texto (<strong>Dirección/Ciudad/País</strong> por origen y destino). Si no hay ciudad, se intenta con la capital del país.</p>
 <div class="actions">
-  <a class="button secondary" href="/templates/terrestre-ruta">Descargar plantilla</a>
+  <a id="terrestre-template-link" class="button secondary" href="/templates/terrestre-ruta?mode=auto">Descargar plantilla</a>
 </div>
 
 <form id="terrestre-form" class="upload-form" enctype="multipart/form-data">
@@ -27,6 +27,7 @@
 const form = document.getElementById('terrestre-form');
 const fileInput = document.getElementById('terrestre-file');
 const modeSelect = document.getElementById('terrestre-mode');
+const templateLink = document.getElementById('terrestre-template-link');
 const statusEl = document.getElementById('terrestre-status');
 const summaryEl = document.getElementById('terrestre-summary');
 const alertText = document.getElementById('terrestre-alert-text');
@@ -38,6 +39,11 @@ const missingTable = document.getElementById('terrestre-missing-table');
 const downloadBtn = document.getElementById('terrestre-download');
 const ackBtn = document.getElementById('terrestre-ack');
 let currentFile = null;
+
+modeSelect.addEventListener('change', () => {
+  const mode = modeSelect.value || 'auto';
+  templateLink.href = `/templates/terrestre-ruta?mode=${mode}`;
+});
 
 function buildTable(tableElement, rows) {
   tableElement.innerHTML = '';

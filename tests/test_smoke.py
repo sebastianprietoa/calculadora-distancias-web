@@ -78,6 +78,7 @@ def test_coordenadas_service_builds_consulta_from_ciudad_pais(monkeypatch):
 
     assert result.iloc[0]["Consulta"] == "Santiago, Chile"
     assert result.iloc[0]["Estado"] == "OK"
+    assert result.iloc[0]["Precision_pct"] >= 90
 
 
 def test_parse_float_in_range_rejects_out_of_bounds():

@@ -53,6 +53,25 @@ class CoordenadasService:
             return None
         return data[0]
 
+
+    def _estimate_precision_pct(self, ciudad: str, pais: str, display_name: str | None, fuente: str | None) -> float:
+        if not display_name:
+            return 0.0
+
+        display_norm = normalize_text(str(display_name))
+        ciudad_norm = normalize_text(ciudad)
+        pais_norm = normalize_text(pais)
+
+        score = 0.0
+        if ciudad_norm and ciudad_norm in display_norm:
+            score += 50.0
+        if pais_norm and pais_norm in display_norm:
+            score += 40.0
+        if fuente == "cache":
+            score += 10.0
+
+        return round(min(score, 100.0), 2)
+
     def process(self, df: pd.DataFrame) -> pd.DataFrame:
         require_columns(df, self.required_columns)
         cache_df = self._load_cache()
@@ -71,6 +90,7 @@ class CoordenadasService:
                         "Longitud": None,
                         "Display_name": None,
                         "Fuente": None,
+                        "Precision_pct": 0.0,
                         "Estado": "FALTAN DATOS",
                     }
                 )
@@ -92,6 +112,7 @@ class CoordenadasService:
                         "Longitud": match_row["Longitud"],
                         "Display_name": match_row["Display_name"],
                         "Fuente": "cache",
+                        "Precision_pct": self._estimate_precision_pct(ciudad_str, pais_str, match_row["Display_name"], "cache"),
                         "Estado": "OK",
                     }
                 )
@@ -108,6 +129,7 @@ class CoordenadasService:
                             "Longitud": None,
                             "Display_name": None,
                             "Fuente": "nominatim",
+                            "Precision_pct": 0.0,
                             "Estado": "NO ENCONTRADO",
                         }
                     )
@@ -128,6 +150,7 @@ class CoordenadasService:
                         "Longitud": result.get("lon"),
                         "Display_name": result.get("display_name"),
                         "Fuente": "nominatim",
+                        "Precision_pct": self._estimate_precision_pct(ciudad_str, pais_str, result.get("display_name"), "nominatim"),
                         "Estado": "OK",
                     }
                 )
@@ -140,6 +163,7 @@ class CoordenadasService:
                         "Longitud": None,
                         "Display_name": None,
                         "Fuente": "nominatim",
+                        "Precision_pct": 0.0,
                         "Estado": f"ERROR CONSULTA: {exc}",
                     }
                 )

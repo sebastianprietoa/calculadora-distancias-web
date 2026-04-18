@@ -5,8 +5,225 @@
 <div class="actions">
   <a class="button secondary" href="/templates/coordenadas">Descargar plantilla</a>
 </div>
-<form class="upload-form" action="/api/coordenadas" method="post" enctype="multipart/form-data">
-  <input type="file" name="file" accept=".xlsx,.csv" required>
-  <button class="button" type="submit">Procesar archivo</button>
+
+<form id="coordenadas-form" class="upload-form" enctype="multipart/form-data">
+  <input id="coordenadas-file" type="file" name="file" accept=".xlsx,.csv" required>
+  <button class="button" type="submit">Validar y procesar</button>
+  <button id="download-result" class="button secondary" type="button" disabled>Descargar resultado XLSX</button>
 </form>
+
+<section id="progress-card" class="card hidden-block">
+  <h3>Procesando archivo</h3>
+  <div class="progress-track">
+    <div id="progress-bar" class="progress-bar" style="width: 0%"></div>
+  </div>
+  <p id="progress-text">0% completado</p>
+  <p id="eta-text">Tiempo estimado restante: --</p>
+</section>
+
+<section id="summary-card" class="card hidden-block">
+  <h3>Resumen de validación</h3>
+  <div id="summary-grid" class="summary-grid"></div>
+</section>
+
+<section id="missing-card" class="card hidden-block">
+  <h3>Registros con observaciones (no encontrados o incompletos)</h3>
+  <div class="table-wrap">
+    <table id="missing-table"></table>
+  </div>
+</section>
+
+<section id="preview-card" class="card hidden-block">
+  <h3>Vista previa de resultados (primeras 200 filas)</h3>
+  <div class="table-wrap">
+    <table id="preview-table"></table>
+  </div>
+</section>
+
+<script>
+  const form = document.getElementById('coordenadas-form');
+  const fileInput = document.getElementById('coordenadas-file');
+  const progressCard = document.getElementById('progress-card');
+  const progressBar = document.getElementById('progress-bar');
+  const progressText = document.getElementById('progress-text');
+  const etaText = document.getElementById('eta-text');
+  const summaryCard = document.getElementById('summary-card');
+  const summaryGrid = document.getElementById('summary-grid');
+  const previewCard = document.getElementById('preview-card');
+  const previewTable = document.getElementById('preview-table');
+  const missingCard = document.getElementById('missing-card');
+  const missingTable = document.getElementById('missing-table');
+  const downloadButton = document.getElementById('download-result');
+
+  let currentFile = null;
+  let fakeProgressInterval = null;
+
+  function formatSeconds(totalSeconds) {
+    if (!Number.isFinite(totalSeconds) || totalSeconds < 0) return '--';
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = Math.floor(totalSeconds % 60);
+    return `${minutes}m ${seconds}s`;
+  }
+
+  function setProgress(value, etaSeconds) {
+    const normalized = Math.max(0, Math.min(100, value));
+    progressBar.style.width = `${normalized}%`;
+    progressText.textContent = `${Math.round(normalized)}% completado`;
+    etaText.textContent = `Tiempo estimado restante: ${formatSeconds(etaSeconds)}`;
+  }
+
+  function buildTable(tableElement, rows) {
+    tableElement.innerHTML = '';
+    if (!rows || rows.length === 0) {
+      tableElement.innerHTML = '<tr><td>Sin datos para mostrar</td></tr>';
+      return;
+    }
+
+    const columns = Object.keys(rows[0]);
+    const thead = document.createElement('thead');
+    thead.innerHTML = `<tr>${columns.map(col => `<th>${col}</th>`).join('')}</tr>`;
+    tableElement.appendChild(thead);
+
+    const tbody = document.createElement('tbody');
+    rows.forEach((row) => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = columns.map((col) => `<td>${row[col] ?? ''}</td>`).join('');
+      if (row.Estado && row.Estado !== 'OK') {
+        tr.classList.add('row-warning');
+      }
+      tbody.appendChild(tr);
+    });
+    tableElement.appendChild(tbody);
+  }
+
+  function renderSummary(summary) {
+    const cards = [
+      ['Total filas', summary.total],
+      ['OK', summary.ok],
+      ['No encontrado', summary.not_found],
+      ['Faltan datos', summary.missing],
+      ['Errores', summary.errors],
+      ['Precisión promedio', `${summary.precision_pct}%`],
+    ];
+
+    summaryGrid.innerHTML = cards.map(([label, value]) => (
+      `<div class="summary-item"><strong>${label}</strong><span>${value}</span></div>`
+    )).join('');
+  }
+
+  async function triggerDownload() {
+    if (!currentFile) return;
+
+    const formData = new FormData();
+    formData.append('file', currentFile);
+
+    const response = await fetch('/api/coordenadas', { method: 'POST', body: formData });
+    if (!response.ok) {
+      throw new Error(`No se pudo descargar el resultado (${response.status})`);
+    }
+
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'coordenadas_output.xlsx';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    window.URL.revokeObjectURL(url);
+  }
+
+  downloadButton.addEventListener('click', async () => {
+    downloadButton.disabled = true;
+    try {
+      await triggerDownload();
+    } catch (error) {
+      alert(error.message || 'Error descargando archivo');
+    } finally {
+      downloadButton.disabled = false;
+    }
+  });
+
+  form.addEventListener('submit', (event) => {
+    event.preventDefault();
+
+    const file = fileInput.files[0];
+    if (!file) {
+      alert('Selecciona un archivo');
+      return;
+    }
+
+    currentFile = file;
+    summaryCard.classList.add('hidden-block');
+    previewCard.classList.add('hidden-block');
+    missingCard.classList.add('hidden-block');
+    downloadButton.disabled = true;
+
+    progressCard.classList.remove('hidden-block');
+    const estimatedTotalSeconds = Math.max(5, Math.min(90, file.size / 300000));
+    const startedAt = Date.now();
+    setProgress(1, estimatedTotalSeconds);
+
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', '/api/coordenadas/preview');
+
+    xhr.upload.onprogress = (progressEvent) => {
+      if (progressEvent.lengthComputable) {
+        const uploadPct = (progressEvent.loaded / progressEvent.total) * 70;
+        const elapsed = (Date.now() - startedAt) / 1000;
+        const eta = Math.max(0, estimatedTotalSeconds - elapsed);
+        setProgress(uploadPct, eta);
+      }
+    };
+
+    fakeProgressInterval = setInterval(() => {
+      const currentPct = parseFloat(progressBar.style.width || '0');
+      const elapsed = (Date.now() - startedAt) / 1000;
+      const eta = Math.max(0, estimatedTotalSeconds - elapsed);
+      if (currentPct < 95) {
+        setProgress(currentPct + 1, eta);
+      }
+    }, 400);
+
+    xhr.onload = () => {
+      clearInterval(fakeProgressInterval);
+      fakeProgressInterval = null;
+
+      if (xhr.status < 200 || xhr.status >= 300) {
+        const responseMessage = xhr.responseText || 'Error procesando archivo';
+        alert(responseMessage);
+        setProgress(0, NaN);
+        return;
+      }
+
+      let payload;
+      try {
+        payload = JSON.parse(xhr.responseText);
+      } catch (err) {
+        alert('Respuesta inválida del servidor');
+        return;
+      }
+
+      setProgress(100, 0);
+      renderSummary(payload.summary || {});
+      buildTable(previewTable, payload.rows_preview || []);
+      buildTable(missingTable, payload.missing_preview || []);
+      summaryCard.classList.remove('hidden-block');
+      previewCard.classList.remove('hidden-block');
+      missingCard.classList.remove('hidden-block');
+      downloadButton.disabled = false;
+    };
+
+    xhr.onerror = () => {
+      clearInterval(fakeProgressInterval);
+      fakeProgressInterval = null;
+      alert('No fue posible conectar con el servidor');
+      setProgress(0, NaN);
+    };
+
+    const formData = new FormData();
+    formData.append('file', file);
+    xhr.send(formData);
+  });
+</script>
 {% endblock %}

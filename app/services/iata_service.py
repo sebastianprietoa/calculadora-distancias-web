@@ -5,7 +5,7 @@ from pathlib import Path
 import pandas as pd
 
 from app.utils.geo import haversine_km
-from app.utils.validators import require_columns
+from app.utils.validators import is_blank, require_columns
 
 BASE_DIR = Path(__file__).resolve().parents[2]
 MASTER_FILE = BASE_DIR / "data" / "masters" / "aeropuertos_maestra.csv"
@@ -33,19 +33,33 @@ class IATAService:
             origin = row.get("IATA_origen")
             destination = row.get("IATA_destino")
 
-            if pd.isna(origin) or pd.isna(destination):
+            if is_blank(origin) or is_blank(destination):
                 results.append({**row.to_dict(), "Estado": "FALTAN DATOS"})
                 continue
 
-            origin_airport = self._lookup_airport(origin)
-            destination_airport = self._lookup_airport(destination)
+            origin_norm = str(origin).strip().upper()
+            destination_norm = str(destination).strip().upper()
+
+            if len(origin_norm) != 3 or len(destination_norm) != 3:
+                results.append(
+                    {
+                        **row.to_dict(),
+                        "IATA_origen_norm": origin_norm,
+                        "IATA_destino_norm": destination_norm,
+                        "Estado": "FORMATO IATA INVÁLIDO",
+                    }
+                )
+                continue
+
+            origin_airport = self._lookup_airport(origin_norm)
+            destination_airport = self._lookup_airport(destination_norm)
 
             if origin_airport is None or destination_airport is None:
                 results.append(
                     {
                         **row.to_dict(),
-                        "IATA_origen_norm": str(origin).strip().upper(),
-                        "IATA_destino_norm": str(destination).strip().upper(),
+                        "IATA_origen_norm": origin_norm,
+                        "IATA_destino_norm": destination_norm,
                         "Lat_origen": None,
                         "Lon_origen": None,
                         "Aeropuerto_origen": None,
@@ -72,8 +86,8 @@ class IATAService:
             results.append(
                 {
                     **row.to_dict(),
-                    "IATA_origen_norm": str(origin).strip().upper(),
-                    "IATA_destino_norm": str(destination).strip().upper(),
+                    "IATA_origen_norm": origin_norm,
+                    "IATA_destino_norm": destination_norm,
                     "Lat_origen": origin_airport["lat"],
                     "Lon_origen": origin_airport["lon"],
                     "Aeropuerto_origen": origin_airport["airport_name"],

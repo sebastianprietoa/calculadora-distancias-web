@@ -20,9 +20,15 @@ def validate_extension(filename: str) -> str:
 async def read_uploaded_table(upload: UploadFile) -> pd.DataFrame:
     suffix = validate_extension(upload.filename or "")
     content = await upload.read()
-    if suffix == ".csv":
-        return pd.read_csv(BytesIO(content))
-    return pd.read_excel(BytesIO(content))
+    if not content:
+        raise ValueError("El archivo está vacío")
+
+    try:
+        if suffix == ".csv":
+            return pd.read_csv(BytesIO(content))
+        return pd.read_excel(BytesIO(content))
+    except Exception as exc:
+        raise ValueError(f"No se pudo leer el archivo {suffix}: {exc}") from exc
 
 
 def dataframe_to_excel_bytes(df: pd.DataFrame, sheet_name: str = "resultado") -> bytes:

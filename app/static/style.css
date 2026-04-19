@@ -240,3 +240,15 @@ select {
   align-items: center;
   flex-wrap: wrap;
 }
+
+.tab-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.iata-mode-tab.active {
+  background: linear-gradient(180deg, var(--accent), #13ad5a);
+  color: #04130c;
+  border-color: transparent;
+}

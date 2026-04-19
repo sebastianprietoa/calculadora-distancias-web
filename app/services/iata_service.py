@@ -90,6 +90,11 @@ class IATAService:
             return None
         return round(routes[0]["distance"] / 1000, 2)
 
+    def _same_country(self, country_a: str | None, country_b: str | None) -> bool:
+        if is_blank(country_a) or is_blank(country_b):
+            return False
+        return str(country_a).strip().lower() == str(country_b).strip().lower()
+
     def _default_airport_for_country(self, country: str) -> dict | None:
         country_match = self.master_df[self.master_df["country"].astype(str).str.strip().str.lower() == country.strip().lower()]
         if country_match.empty:
@@ -134,6 +139,8 @@ class IATAService:
                     selected_plant_airport = self._default_airport_for_country(str(plant_country))
                 if selected_plant_airport is None:
                     raise ValueError("No se encontró aeropuerto principal para el país de la planta")
+                if not self._same_country(selected_plant_airport.get("country"), plant_country):
+                    raise ValueError("El aeropuerto de salida debe estar en el mismo país que la planta")
 
                 try:
                     plant_to_airport_km = self._road_distance_km(
@@ -232,18 +239,27 @@ class IATAService:
             }
 
             if mode == "upstream" and plant_point and last_airport:
-                try:
-                    airport_to_plant = self._road_distance_km(
-                        float(last_airport["lat"]),
-                        float(last_airport["lon"]),
-                        plant_point[0],
-                        plant_point[1],
-                    )
-                except Exception:
-                    airport_to_plant = None
                 result_row["Modo_compuesto"] = "upstream"
-                result_row["Distancia Aeropuerto - Planta"] = airport_to_plant
-                result_row["Distancia_total_compuesta_km"] = round(total_distance + (airport_to_plant or 0), 2)
+                result_row["Aeropuerto_llegada_planta"] = last_airport.get("iata_norm")
+                result_row["Ciudad_llegada_planta"] = last_airport.get("city")
+                result_row["Pais_llegada_planta"] = last_airport.get("country")
+
+                if not self._same_country(last_airport.get("country"), plant_country):
+                    result_row["Distancia Aeropuerto - Planta"] = None
+                    result_row["Distancia_total_compuesta_km"] = None
+                    result_row["Estado"] = "LLEGADA FUERA DEL PAÍS DE PLANTA"
+                else:
+                    try:
+                        airport_to_plant = self._road_distance_km(
+                            float(last_airport["lat"]),
+                            float(last_airport["lon"]),
+                            plant_point[0],
+                            plant_point[1],
+                        )
+                    except Exception:
+                        airport_to_plant = None
+                    result_row["Distancia Aeropuerto - Planta"] = airport_to_plant
+                    result_row["Distancia_total_compuesta_km"] = round(total_distance + (airport_to_plant or 0), 2)
 
             if mode == "downstream" and plant_point and selected_plant_airport and last_airport:
                 air_from_plant_airport = haversine_km(
@@ -254,6 +270,11 @@ class IATAService:
                 )
                 result_row["Modo_compuesto"] = "downstream"
                 result_row["Aeropuerto_salida_planta"] = selected_plant_airport["iata_norm"]
+                result_row["Ciudad_salida_planta"] = selected_plant_airport.get("city")
+                result_row["Pais_salida_planta"] = selected_plant_airport.get("country")
+                result_row["Aeropuerto_llegada"] = last_airport.get("iata_norm")
+                result_row["Ciudad_llegada"] = last_airport.get("city")
+                result_row["Pais_llegada"] = last_airport.get("country")
                 result_row["Distancia a Aeropuerto"] = plant_to_airport_km
                 result_row["Distancia_aerea_desde_planta_km"] = round(air_from_plant_airport, 2)
                 result_row["Distancia_total_compuesta_km"] = round((plant_to_airport_km or 0) + air_from_plant_airport, 2)

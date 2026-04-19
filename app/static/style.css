@@ -199,3 +199,44 @@ select {
   color: var(--muted);
   background: rgba(7, 16, 12, 0.9);
 }
+
+.iata-form-center {
+  justify-content: center;
+  align-items: flex-end;
+  gap: 14px;
+}
+.field-block {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 220px;
+  flex: 1 1 220px;
+}
+.field-block label {
+  font-size: 0.86rem;
+  color: #d7f2e4;
+  font-weight: 600;
+}
+.field-block label span {
+  display: inline-block;
+  margin-left: 6px;
+  font-size: 0.75rem;
+  color: var(--muted);
+  font-weight: 500;
+}
+.field-block.required label span {
+  color: #8ef0bc;
+}
+.field-block.optional label span {
+  color: #b7d7c5;
+}
+.field-block input,
+.field-block select {
+  width: 100%;
+}
+.button-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}

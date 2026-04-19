@@ -33,7 +33,7 @@ def home(request: Request):
                     "path": "/coordenadas",
                 },
                 {
-                    "name": "Viajes IATA",
+                    "name": "Distancias Aéreas",
                     "description": "Calcula distancia aérea entre códigos IATA origen y destino.",
                     "path": "/iata",
                 },

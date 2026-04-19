@@ -1,24 +1,53 @@
 {% extends "base.html" %}
 {% block content %}
-<h1>Viajes IATA</h1>
-<p>Sube .xlsx/.csv con <strong>IATA_origen</strong> y <strong>IATA_destino</strong>. También acepta ruta en un solo campo, por ejemplo: <code>LIM/SCL/ANF/SCL/LIM</code>.</p>
+<h1>Distancias Aéreas</h1>
+<p>
+  Sube un archivo .xlsx/.csv con <strong>IATA_origen</strong> y <strong>IATA_destino</strong> (obligatorios).
+  También acepta ruta en un solo campo: <code>LIM/SCL/ANF/SCL/LIM</code>.
+</p>
 <div class="actions">
   <a class="button secondary" href="/templates/iata">Descargar plantilla</a>
 </div>
 
-<form id="iata-form" class="upload-form" enctype="multipart/form-data">
-  <input id="iata-file" type="file" name="file" accept=".xlsx,.csv" required>
-  <select id="iata-composite-mode" name="composite_mode">
-    <option value="" selected>Distancia aérea estándar</option>
-    <option value="upstream">Distancia compuesta Upstream</option>
-    <option value="downstream">Distancia compuesta Downstream</option>
-  </select>
-  <input id="plant-address" type="text" placeholder="Dirección exacta planta (opcional)">
-  <input id="plant-city" type="text" placeholder="Ciudad planta (opcional)">
-  <input id="plant-country" type="text" placeholder="País planta (para compuesto)">
-  <input id="plant-airport" type="text" placeholder="IATA salida planta (downstream opcional)">
-  <button class="button" type="submit">Validar archivo (sin descargar)</button>
-  <button id="iata-download" class="button secondary" type="button" disabled>Descargar resultado XLSX</button>
+<form id="iata-form" class="upload-form iata-form-center" enctype="multipart/form-data">
+  <div class="field-block required">
+    <label for="iata-file">Archivo de entrada <span>Obligatorio</span></label>
+    <input id="iata-file" type="file" name="file" accept=".xlsx,.csv" required>
+  </div>
+
+  <div class="field-block optional">
+    <label for="iata-composite-mode">Modo de cálculo compuesto <span>Opcional</span></label>
+    <select id="iata-composite-mode" name="composite_mode">
+      <option value="" selected>Distancia aérea estándar</option>
+      <option value="upstream">Distancia compuesta Upstream</option>
+      <option value="downstream">Distancia compuesta Downstream</option>
+    </select>
+  </div>
+
+  <div class="field-block optional">
+    <label for="plant-address">Dirección exacta planta <span>Opcional</span></label>
+    <input id="plant-address" type="text" placeholder="Ej: Benavente 550">
+  </div>
+
+  <div class="field-block optional">
+    <label for="plant-city">Ciudad planta <span>Opcional</span></label>
+    <input id="plant-city" type="text" placeholder="Ej: Puerto Montt">
+  </div>
+
+  <div class="field-block optional">
+    <label for="plant-country">País planta <span>Opcional (requerido en modo compuesto)</span></label>
+    <input id="plant-country" type="text" placeholder="Ej: Chile">
+  </div>
+
+  <div class="field-block optional">
+    <label for="plant-airport">IATA salida planta <span>Opcional (downstream)</span></label>
+    <input id="plant-airport" type="text" placeholder="Ej: SCL">
+  </div>
+
+  <div class="button-row">
+    <button class="button" type="submit">Validar archivo (sin descargar)</button>
+    <button id="iata-download" class="button secondary" type="button" disabled>Descargar resultado XLSX</button>
+  </div>
 </form>
 
 <section id="iata-progress-card" class="card">

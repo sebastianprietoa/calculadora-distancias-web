@@ -50,7 +50,7 @@ def download_template(mode: str = Query(default="corporativo")):
         template_df = pd.DataFrame(columns=["IATA_destino", "Ciudad_destino", "Pais_destino"])
         filename = "template_iata_downstream.xlsx"
     else:
-        template_df = pd.DataFrame(columns=["IATA_origen", "IATA_destino", "Ruta_IATA"])
+        template_df = pd.DataFrame(columns=["Origen", "Destino", "Ruta"])
         filename = "template_iata_corporativo.xlsx"
     excel_bytes = dataframe_to_excel_bytes(template_df, sheet_name="iata_template")
     return StreamingResponse(

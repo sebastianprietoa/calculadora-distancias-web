@@ -181,6 +181,32 @@ def test_iata_service_corporativo_supports_origen_destino_and_ruta_mix():
     assert result.iloc[3]["Ruta_IATA_norm"] == "SCL/LIM"
 
 
+def test_iata_service_corporativo_accepts_origen_destino_ruta_headers():
+    service = IATAService()
+    df = pd.DataFrame(
+        [
+            {"Origen": "SCL", "Destino": "LIM", "Ruta": ""},
+            {"Origen": "", "Destino": "", "Ruta": "SCL/LIM/SCL"},
+        ]
+    )
+    result = service.process(df)
+
+    assert (result["Estado"] == "OK").all()
+    assert result.iloc[0]["Ruta_IATA_norm"] == "SCL/LIM"
+    assert result.iloc[1]["Ruta_IATA_norm"] == "SCL/LIM/SCL"
+    assert result.iloc[0]["Distancia_aerea_km"] > 0
+
+
+def test_iata_service_rejects_empty_dataframe():
+    service = IATAService()
+    df = pd.DataFrame(columns=["Origen", "Destino", "Ruta"])
+    try:
+        service.process(df)
+        assert False, "service.process debía lanzar ValueError para planilla sin filas"
+    except ValueError as exc:
+        assert "no contiene filas" in str(exc)
+
+
 def test_terrestre_service_text_mode_uses_country_capital_when_city_missing(monkeypatch):
     service = TerrestreRutaService()
 

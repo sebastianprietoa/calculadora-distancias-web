@@ -16,6 +16,14 @@ MASTER_FILE = BASE_DIR / "data" / "masters" / "aeropuertos_maestra.csv"
 
 class IATAService:
     required_columns = ["IATA_origen", "IATA_destino"]
+    corporate_column_aliases = {
+        "Origen": "IATA_origen",
+        "origen": "IATA_origen",
+        "Destino": "IATA_destino",
+        "destino": "IATA_destino",
+        "Ruta": "Ruta_IATA",
+        "ruta": "Ruta_IATA",
+    }
     iata_aliases = {
         "PMC": "PMC",  # Aeropuerto El Tepual (Puerto Montt)
     }
@@ -213,6 +221,52 @@ class IATAService:
         plant_airport_iata: str | None = None,
     ) -> pd.DataFrame:
         results: list[dict] = []
+        df = df.rename(columns=self.corporate_column_aliases).copy()
+
+        mode = (composite_mode or "").strip().lower()
+        if mode and mode not in {"upstream", "downstream"}:
+            raise ValueError("Modo compuesto inválido. Usa upstream o downstream")
+
+        if df.empty:
+            raise ValueError("El archivo no contiene filas para procesar")
+
+        if mode == "" and not any(col in df.columns for col in ["IATA_origen", "IATA_destino", "Ruta_IATA"]):
+            raise ValueError("Faltan columnas requeridas para viaje corporativo: IATA_origen / IATA_destino / Ruta_IATA")
+
+        plant_point = None
+        selected_plant_airport = None
+        plant_to_airport_km = None
+
+        if mode:
+            try:
+                plant_point = self._geocode_plant(plant_address, plant_city, plant_country)
+            except Exception as exc:
+                raise ValueError(f"No se pudo geocodificar la ubicación de la planta: {exc}") from exc
+            if plant_point is None:
+                raise ValueError("No se pudo geocodificar la ubicación de la planta")
+
+            if not is_blank(plant_airport_iata):
+                selected_plant_airport = self._lookup_airport(str(plant_airport_iata).strip().upper())
+                if selected_plant_airport is None:
+                    raise ValueError("Aeropuerto de planta no encontrado")
+            elif not is_blank(plant_country):
+                selected_plant_airport = self._default_airport_for_country(str(plant_country))
+
+            if selected_plant_airport is None:
+                raise ValueError("No se encontró aeropuerto principal para el país de la planta")
+            if not self._same_country(selected_plant_airport.get("country"), plant_country):
+                raise ValueError("El aeropuerto de planta debe estar en el mismo país que la planta")
+
+            if mode == "downstream":
+                try:
+                    plant_to_airport_km = self._road_distance_km(
+                        plant_point[0],
+                        plant_point[1],
+                        float(selected_plant_airport["lat"]),
+                        float(selected_plant_airport["lon"]),
+                    )
+                except Exception as exc:
+                    raise ValueError(f"No se pudo calcular distancia planta-aeropuerto: {exc}") from exc
 
         mode = (composite_mode or "").strip().lower()
         if mode and mode not in {"upstream", "downstream"}:
@@ -352,6 +406,7 @@ class IATAService:
                 "Pais_destino": last_airport["country"] if last_airport else None,
                 "Distancia_km": total_distance,
                 "Distancia_km_aerea": total_distance,
+                "Distancia_aerea_km": total_distance,
                 "Estado": "OK",
             }
 

@@ -162,6 +162,25 @@ def test_iata_service_supports_route_and_sums_segments():
     assert route_result["Distancia_km"] == round(pair_result["Distancia_km"] * 2, 2)
 
 
+def test_iata_service_corporativo_supports_origen_destino_and_ruta_mix():
+    service = IATAService()
+    df = pd.DataFrame(
+        [
+            {"IATA_origen": "SCL", "IATA_destino": "LIM", "Ruta_IATA": "SCL/LIM"},
+            {"IATA_origen": "SCL", "IATA_destino": "LIM", "Ruta_IATA": "SCL/LIM/SCL"},
+            {"IATA_origen": "SCL", "IATA_destino": "LIM", "Ruta_IATA": None},
+            {"IATA_origen": None, "IATA_destino": None, "Ruta_IATA": "SCL/LIM"},
+        ]
+    )
+    result = service.process(df)
+
+    assert (result["Estado"] == "OK").all()
+    assert result.iloc[0]["Ruta_IATA_norm"] == "SCL/LIM"
+    assert result.iloc[1]["Ruta_IATA_norm"] == "SCL/LIM/SCL"
+    assert result.iloc[2]["Ruta_IATA_norm"] == "SCL/LIM"
+    assert result.iloc[3]["Ruta_IATA_norm"] == "SCL/LIM"
+
+
 def test_terrestre_service_text_mode_uses_country_capital_when_city_missing(monkeypatch):
     service = TerrestreRutaService()
 
@@ -270,3 +289,30 @@ def test_iata_service_supports_pmc_code_alias_in_composite(monkeypatch):
 
     assert result["Estado"] == "OK"
     assert result["Aeropuerto_salida_planta"] == "PMC"
+
+
+def test_iata_service_city_country_supports_spanish_country_names(monkeypatch):
+    service = IATAService()
+    monkeypatch.setattr(service, "_geocode_plant", lambda *args, **kwargs: (-33.45, -70.66))
+    monkeypatch.setattr(service, "_road_distance_km", lambda *args, **kwargs: 14.0)
+
+    upstream = pd.DataFrame([{"Ciudad_origen": "Madrid", "Pais_origen": "España"}])
+    upstream_result = service.process(
+        upstream,
+        composite_mode="upstream",
+        plant_country="Chile",
+        plant_airport_iata="SCL",
+    ).iloc[0]
+
+    downstream = pd.DataFrame([{"Ciudad_destino": "Buenos Aires", "Pais_destino": "Argentina"}])
+    downstream_result = service.process(
+        downstream,
+        composite_mode="downstream",
+        plant_country="Chile",
+        plant_airport_iata="SCL",
+    ).iloc[0]
+
+    assert upstream_result["Estado"] == "OK"
+    assert upstream_result["IATA_origen_norm"] == "MAD"
+    assert downstream_result["Estado"] == "OK"
+    assert downstream_result["IATA_destino_norm"] == "EZE"

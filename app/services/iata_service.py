@@ -19,6 +19,16 @@ class IATAService:
     iata_aliases = {
         "PMC": "PMC",  # Aeropuerto El Tepual (Puerto Montt)
     }
+    country_aliases = {
+        "espana": "spain",
+        "españa": "spain",
+        "eeuu": "united states",
+        "estados unidos": "united states",
+        "brasil": "brazil",
+        "peru": "peru",
+        "chile": "chile",
+        "argentina": "argentina",
+    }
 
     def __init__(self) -> None:
         self.master_df = pd.read_csv(MASTER_FILE)
@@ -35,6 +45,15 @@ class IATAService:
                 "lat": -41.4389,
                 "lon": -73.0939,
                 "iata_norm": "PMC",
+            },
+            {
+                "iata": "EZE",
+                "airport_name": "Ministro Pistarini International Airport",
+                "city": "Buenos Aires",
+                "country": "Argentina",
+                "lat": -34.8222,
+                "lon": -58.5358,
+                "iata_norm": "EZE",
             }
         ]
         for airport in manual_airports:
@@ -61,12 +80,12 @@ class IATAService:
 
     def _lookup_airport_by_city_country(self, city: str | None, country: str | None) -> dict | None:
         city_norm = self._normalize_text(city)
-        country_norm = self._normalize_text(country)
+        country_norm = self._normalize_country(country)
         if not city_norm or not country_norm:
             return None
 
         country_df = self.master_df[
-            self.master_df["country"].astype(str).map(self._normalize_text) == country_norm
+            self.master_df["country"].astype(str).map(self._normalize_country) == country_norm
         ]
         if country_df.empty:
             return None
@@ -170,11 +189,15 @@ class IATAService:
     def _same_country(self, country_a: str | None, country_b: str | None) -> bool:
         if is_blank(country_a) or is_blank(country_b):
             return False
-        return self._normalize_text(country_a) == self._normalize_text(country_b)
+        return self._normalize_country(country_a) == self._normalize_country(country_b)
+
+    def _normalize_country(self, value: str | None) -> str:
+        norm = self._normalize_text(value)
+        return self.country_aliases.get(norm, norm)
 
     def _default_airport_for_country(self, country: str) -> dict | None:
-        country_norm = self._normalize_text(country)
-        country_match = self.master_df[self.master_df["country"].astype(str).map(self._normalize_text) == country_norm]
+        country_norm = self._normalize_country(country)
+        country_match = self.master_df[self.master_df["country"].astype(str).map(self._normalize_country) == country_norm]
         if country_match.empty:
             return None
         country_match = country_match.sort_values(by=["city", "airport_name"])

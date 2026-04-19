@@ -234,3 +234,39 @@ def test_iata_service_composite_downstream_adds_plant_to_airport_and_air_leg(mon
     assert result["Aeropuerto_salida_planta"] == "SCL"
     assert result["Distancia a Aeropuerto"] == 15.0
     assert result["Distancia_total_compuesta_km"] >= 15.0
+
+
+def test_iata_service_upstream_accepts_city_country_when_iata_missing(monkeypatch):
+    service = IATAService()
+    monkeypatch.setattr(service, "_geocode_plant", lambda *args, **kwargs: (-33.45, -70.66))
+    monkeypatch.setattr(service, "_road_distance_km", lambda *args, **kwargs: 20.0)
+
+    df = pd.DataFrame([{"Ciudad_origen": "Antofagasta", "Pais_origen": "Chile"}])
+    result = service.process(
+        df,
+        composite_mode="upstream",
+        plant_country="Chile",
+        plant_airport_iata="SCL",
+    ).iloc[0]
+
+    assert result["Estado"] == "OK"
+    assert result["IATA_origen_norm"] == "ANF"
+    assert result["IATA_destino_norm"] == "SCL"
+    assert result["Distancia_total_compuesta_km"] >= result["Distancia_km"]
+
+
+def test_iata_service_supports_pmc_code_alias_in_composite(monkeypatch):
+    service = IATAService()
+    monkeypatch.setattr(service, "_geocode_plant", lambda *args, **kwargs: (-41.47, -72.94))
+    monkeypatch.setattr(service, "_road_distance_km", lambda *args, **kwargs: 8.0)
+
+    df = pd.DataFrame([{"IATA_destino": "ANF"}])
+    result = service.process(
+        df,
+        composite_mode="downstream",
+        plant_country="Chile",
+        plant_airport_iata="PMC",
+    ).iloc[0]
+
+    assert result["Estado"] == "OK"
+    assert result["Aeropuerto_salida_planta"] == "PMC"

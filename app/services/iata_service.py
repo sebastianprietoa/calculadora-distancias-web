@@ -2,12 +2,13 @@ from __future__ import annotations
 
 from pathlib import Path
 from time import sleep
+import unicodedata
 
 import pandas as pd
 import requests
 
 from app.utils.geo import haversine_km
-from app.utils.validators import is_blank, require_columns
+from app.utils.validators import is_blank
 
 BASE_DIR = Path(__file__).resolve().parents[2]
 MASTER_FILE = BASE_DIR / "data" / "masters" / "aeropuertos_maestra.csv"
@@ -15,17 +16,71 @@ MASTER_FILE = BASE_DIR / "data" / "masters" / "aeropuertos_maestra.csv"
 
 class IATAService:
     required_columns = ["IATA_origen", "IATA_destino"]
+    iata_aliases = {
+        "PMC": "PMC",  # Aeropuerto El Tepual (Puerto Montt)
+    }
 
     def __init__(self) -> None:
         self.master_df = pd.read_csv(MASTER_FILE)
         self.master_df["iata_norm"] = self.master_df["iata"].astype(str).str.strip().str.upper()
+        self._inject_missing_airports()
 
-    def _lookup_airport(self, iata_code: str) -> dict | None:
+    def _inject_missing_airports(self) -> None:
+        manual_airports = [
+            {
+                "iata": "PMC",
+                "airport_name": "El Tepual Airport",
+                "city": "Puerto Montt",
+                "country": "Chile",
+                "lat": -41.4389,
+                "lon": -73.0939,
+                "iata_norm": "PMC",
+            }
+        ]
+        for airport in manual_airports:
+            exists = not self.master_df[self.master_df["iata_norm"] == airport["iata_norm"]].empty
+            if not exists:
+                self.master_df = pd.concat([self.master_df, pd.DataFrame([airport])], ignore_index=True)
+
+    def _normalize_text(self, value: str | None) -> str:
+        if is_blank(value):
+            return ""
+        text = str(value).strip().lower()
+        text = unicodedata.normalize("NFKD", text)
+        return "".join(ch for ch in text if not unicodedata.combining(ch))
+
+    def _lookup_airport(self, iata_code: str | None) -> dict | None:
+        if is_blank(iata_code):
+            return None
         iata_norm = str(iata_code).strip().upper()
+        iata_norm = self.iata_aliases.get(iata_norm, iata_norm)
         match = self.master_df[self.master_df["iata_norm"] == iata_norm]
         if match.empty:
             return None
         return match.iloc[0].to_dict()
+
+    def _lookup_airport_by_city_country(self, city: str | None, country: str | None) -> dict | None:
+        city_norm = self._normalize_text(city)
+        country_norm = self._normalize_text(country)
+        if not city_norm or not country_norm:
+            return None
+
+        country_df = self.master_df[
+            self.master_df["country"].astype(str).map(self._normalize_text) == country_norm
+        ]
+        if country_df.empty:
+            return None
+
+        exact = country_df[country_df["city"].astype(str).map(self._normalize_text) == city_norm]
+        if not exact.empty:
+            return exact.sort_values(by=["airport_name"]).iloc[0].to_dict()
+
+        partial = country_df[country_df["city"].astype(str).map(self._normalize_text).str.contains(city_norm, na=False)]
+        if partial.empty:
+            partial = country_df[country_df["city"].astype(str).map(self._normalize_text).apply(lambda c: city_norm in c)]
+        if partial.empty:
+            return None
+        return partial.sort_values(by=["airport_name"]).iloc[0].to_dict()
 
     def _extract_route_codes(self, row: pd.Series) -> list[str]:
         route_raw = row.get("Ruta_IATA")
@@ -50,6 +105,28 @@ class IATAService:
 
     def _validate_codes(self, codes: list[str]) -> bool:
         return all(len(code) == 3 for code in codes)
+
+    def _row_value(self, row: pd.Series, candidates: list[str]) -> str | None:
+        for name in candidates:
+            if name in row and not is_blank(row[name]):
+                return str(row[name]).strip()
+        return None
+
+    def _resolve_row_airport(self, row: pd.Series, kind: str) -> dict | None:
+        if kind == "origin":
+            iata = self._row_value(row, ["IATA_origen", "iata_origen", "Codigo_IATA_origen", "Codigo IATA origen"])
+            if not is_blank(iata):
+                return self._lookup_airport(iata)
+            city = self._row_value(row, ["Ciudad_origen", "Ciudad origen", "city_origen"])
+            country = self._row_value(row, ["Pais_origen", "País_origen", "Pais origen", "País origen", "country_origen"])
+            return self._lookup_airport_by_city_country(city, country)
+
+        iata = self._row_value(row, ["IATA_destino", "iata_destino", "Codigo_IATA_destino", "Codigo IATA destino"])
+        if not is_blank(iata):
+            return self._lookup_airport(iata)
+        city = self._row_value(row, ["Ciudad_destino", "Ciudad destino", "city_destino"])
+        country = self._row_value(row, ["Pais_destino", "País_destino", "Pais destino", "País destino", "country_destino"])
+        return self._lookup_airport_by_city_country(city, country)
 
     def _geocode_plant(self, address: str | None, city: str | None, country: str | None) -> tuple[float, float] | None:
         if is_blank(country):
@@ -93,10 +170,11 @@ class IATAService:
     def _same_country(self, country_a: str | None, country_b: str | None) -> bool:
         if is_blank(country_a) or is_blank(country_b):
             return False
-        return str(country_a).strip().lower() == str(country_b).strip().lower()
+        return self._normalize_text(country_a) == self._normalize_text(country_b)
 
     def _default_airport_for_country(self, country: str) -> dict | None:
-        country_match = self.master_df[self.master_df["country"].astype(str).str.strip().str.lower() == country.strip().lower()]
+        country_norm = self._normalize_text(country)
+        country_match = self.master_df[self.master_df["country"].astype(str).map(self._normalize_text) == country_norm]
         if country_match.empty:
             return None
         country_match = country_match.sort_values(by=["city", "airport_name"])
@@ -111,12 +189,14 @@ class IATAService:
         plant_country: str | None = None,
         plant_airport_iata: str | None = None,
     ) -> pd.DataFrame:
-        require_columns(df, self.required_columns)
         results: list[dict] = []
 
         mode = (composite_mode or "").strip().lower()
         if mode and mode not in {"upstream", "downstream"}:
             raise ValueError("Modo compuesto inválido. Usa upstream o downstream")
+
+        if mode == "" and not any(col in df.columns for col in ["IATA_origen", "IATA_destino", "Ruta_IATA"]):
+            raise ValueError("Faltan columnas requeridas para viaje corporativo: IATA_origen / IATA_destino / Ruta_IATA")
 
         plant_point = None
         selected_plant_airport = None
@@ -130,18 +210,19 @@ class IATAService:
             if plant_point is None:
                 raise ValueError("No se pudo geocodificar la ubicación de la planta")
 
-            if mode == "downstream":
-                if not is_blank(plant_airport_iata):
-                    selected_plant_airport = self._lookup_airport(str(plant_airport_iata).strip().upper())
-                    if selected_plant_airport is None:
-                        raise ValueError("Aeropuerto de salida de planta no encontrado")
-                elif not is_blank(plant_country):
-                    selected_plant_airport = self._default_airport_for_country(str(plant_country))
+            if not is_blank(plant_airport_iata):
+                selected_plant_airport = self._lookup_airport(str(plant_airport_iata).strip().upper())
                 if selected_plant_airport is None:
-                    raise ValueError("No se encontró aeropuerto principal para el país de la planta")
-                if not self._same_country(selected_plant_airport.get("country"), plant_country):
-                    raise ValueError("El aeropuerto de salida debe estar en el mismo país que la planta")
+                    raise ValueError("Aeropuerto de planta no encontrado")
+            elif not is_blank(plant_country):
+                selected_plant_airport = self._default_airport_for_country(str(plant_country))
 
+            if selected_plant_airport is None:
+                raise ValueError("No se encontró aeropuerto principal para el país de la planta")
+            if not self._same_country(selected_plant_airport.get("country"), plant_country):
+                raise ValueError("El aeropuerto de planta debe estar en el mismo país que la planta")
+
+            if mode == "downstream":
                 try:
                     plant_to_airport_km = self._road_distance_km(
                         plant_point[0],
@@ -153,7 +234,20 @@ class IATAService:
                     raise ValueError(f"No se pudo calcular distancia planta-aeropuerto: {exc}") from exc
 
         for _, row in df.iterrows():
-            route_codes = self._extract_route_codes(row)
+            if mode == "upstream":
+                origin_airport = self._resolve_row_airport(row, "origin")
+                if origin_airport is None:
+                    results.append({**row.to_dict(), "Estado": "IATA/CIUDAD ORIGEN NO ENCONTRADO"})
+                    continue
+                route_codes = [origin_airport["iata_norm"], selected_plant_airport["iata_norm"]]
+            elif mode == "downstream":
+                destination_airport = self._resolve_row_airport(row, "destination")
+                if destination_airport is None:
+                    results.append({**row.to_dict(), "Estado": "IATA/CIUDAD DESTINO NO ENCONTRADO"})
+                    continue
+                route_codes = [selected_plant_airport["iata_norm"], destination_airport["iata_norm"]]
+            else:
+                route_codes = self._extract_route_codes(row)
 
             if len(route_codes) < 2:
                 results.append({**row.to_dict(), "Estado": "FALTAN DATOS"})
@@ -244,22 +338,17 @@ class IATAService:
                 result_row["Ciudad_llegada_planta"] = last_airport.get("city")
                 result_row["Pais_llegada_planta"] = last_airport.get("country")
 
-                if not self._same_country(last_airport.get("country"), plant_country):
-                    result_row["Distancia Aeropuerto - Planta"] = None
-                    result_row["Distancia_total_compuesta_km"] = None
-                    result_row["Estado"] = "LLEGADA FUERA DEL PAÍS DE PLANTA"
-                else:
-                    try:
-                        airport_to_plant = self._road_distance_km(
-                            float(last_airport["lat"]),
-                            float(last_airport["lon"]),
-                            plant_point[0],
-                            plant_point[1],
-                        )
-                    except Exception:
-                        airport_to_plant = None
-                    result_row["Distancia Aeropuerto - Planta"] = airport_to_plant
-                    result_row["Distancia_total_compuesta_km"] = round(total_distance + (airport_to_plant or 0), 2)
+                try:
+                    airport_to_plant = self._road_distance_km(
+                        float(last_airport["lat"]),
+                        float(last_airport["lon"]),
+                        plant_point[0],
+                        plant_point[1],
+                    )
+                except Exception:
+                    airport_to_plant = None
+                result_row["Distancia Aeropuerto - Planta"] = airport_to_plant
+                result_row["Distancia_total_compuesta_km"] = round(total_distance + (airport_to_plant or 0), 2)
 
             if mode == "downstream" and plant_point and selected_plant_airport and last_airport:
                 air_from_plant_airport = haversine_km(

@@ -2,52 +2,55 @@
 {% block content %}
 <h1>Distancias Aéreas</h1>
 <p>
-  Sube un archivo .xlsx/.csv con <strong>IATA_origen</strong> y <strong>IATA_destino</strong> (obligatorios).
-  También acepta ruta en un solo campo: <code>LIM/SCL/ANF/SCL/LIM</code>.
+  Elige el modo de cálculo y usa la planilla correspondiente. En viaje corporativo puedes usar
+  <strong>Origen/Destino</strong> o <strong>Ruta</strong> (AAA/BBB/CCC).
 </p>
-<div class="actions">
-  <a class="button secondary" href="/templates/iata">Descargar plantilla</a>
-</div>
 
-<form id="iata-form" class="upload-form iata-form-center" enctype="multipart/form-data">
-  <div class="field-block optional">
+<form id="iata-form" class="upload-form iata-layout" enctype="multipart/form-data">
+  <div class="field-block optional iata-top-tabs">
     <label>Modo de cálculo</label>
     <div class="tab-row" id="iata-mode-tabs">
-      <button class="button secondary iata-mode-tab active" type="button" data-mode="">Convencional</button>
-      <button class="button secondary iata-mode-tab" type="button" data-mode="upstream">Upstream</button>
-      <button class="button secondary iata-mode-tab" type="button" data-mode="downstream">Downstream</button>
+      <button class="button secondary iata-mode-tab active" type="button" data-mode="">Viaje Corporativo</button>
+      <button class="button secondary iata-mode-tab" type="button" data-mode="upstream">Transporte y Distribución Upstream</button>
+      <button class="button secondary iata-mode-tab" type="button" data-mode="downstream">Transporte y Distribución Downstream</button>
     </div>
     <input type="hidden" id="iata-composite-mode" name="composite_mode" value="">
   </div>
 
-  <div class="field-block required">
-    <label for="iata-file">Archivo de entrada <span>Obligatorio</span></label>
-    <input id="iata-file" type="file" name="file" accept=".xlsx,.csv" required>
-  </div>
+  <div class="card iata-main-panel">
+    <div class="iata-left-actions">
+      <a id="iata-template-link" class="button secondary" href="/templates/iata?mode=corporativo">Descargar planilla</a>
+      <label class="button secondary iata-upload-btn" for="iata-file">Subir planilla</label>
+      <input id="iata-file" type="file" name="file" accept=".xlsx,.csv" required>
+      <div class="upload-hint">Archivo de entrada obligatorio</div>
+    </div>
 
-  <div class="field-block optional iata-plant-field">
-    <label for="plant-address">Dirección exacta planta <span>Opcional</span></label>
-    <input id="plant-address" type="text" placeholder="Ej: Benavente 550">
-  </div>
+    <div class="iata-right-fields">
+      <div class="field-block optional iata-plant-field">
+        <label for="plant-address">Dirección <span>Opcional</span></label>
+        <input id="plant-address" type="text" placeholder="Ej: Benavente 550, 5502277">
+      </div>
 
-  <div class="field-block optional iata-plant-field">
-    <label for="plant-city">Ciudad planta <span>Opcional</span></label>
-    <input id="plant-city" type="text" placeholder="Ej: Puerto Montt">
-  </div>
+      <div class="field-block optional iata-plant-field">
+        <label for="plant-city">Ciudad <span>Opcional</span></label>
+        <input id="plant-city" type="text" placeholder="Ej: Puerto Montt">
+      </div>
 
-  <div class="field-block optional iata-plant-field">
-    <label for="plant-country">País planta <span>Opcional (requerido en modo compuesto)</span></label>
-    <input id="plant-country" type="text" placeholder="Ej: Chile">
-  </div>
+      <div class="field-block optional iata-plant-field">
+        <label for="plant-country">País <span>Requerido en modo compuesto</span></label>
+        <input id="plant-country" type="text" placeholder="Ej: Chile">
+      </div>
 
-  <div class="field-block optional iata-plant-field" id="iata-plant-airport-field">
-    <label for="plant-airport">IATA salida planta <span>Opcional (downstream)</span></label>
-    <input id="plant-airport" type="text" placeholder="Ej: SCL">
-  </div>
+      <div class="field-block optional iata-plant-field" id="iata-plant-airport-field">
+        <label for="plant-airport">IATA aeropuerto planta <span>Opcional (si va vacío se usa país)</span></label>
+        <input id="plant-airport" type="text" placeholder="Ej: PMC">
+      </div>
 
-  <div class="button-row">
-    <button class="button" type="submit">Validar archivo (sin descargar)</button>
-    <button id="iata-download" class="button secondary" type="button" disabled>Descargar resultado XLSX</button>
+      <div class="button-row">
+        <button class="button" type="submit">Validar archivo (sin descargar)</button>
+        <button id="iata-download" class="button secondary" type="button" disabled>Descargar resultado XLSX</button>
+      </div>
+    </div>
   </div>
 </form>
 
@@ -67,6 +70,7 @@
 <script>
 const form = document.getElementById('iata-form');
 const fileInput = document.getElementById('iata-file');
+const templateLink = document.getElementById('iata-template-link');
 const compositeMode = document.getElementById('iata-composite-mode');
 const modeTabs = Array.from(document.querySelectorAll('.iata-mode-tab'));
 const plantFields = Array.from(document.querySelectorAll('.iata-plant-field'));
@@ -91,13 +95,20 @@ const progressBar = document.getElementById('iata-progress-bar');
 const progressText = document.getElementById('iata-progress-text');
 const etaText = document.getElementById('iata-eta-text');
 
+function modeTemplate(mode) {
+  if (mode === 'upstream') return 'upstream';
+  if (mode === 'downstream') return 'downstream';
+  return 'corporativo';
+}
+
 function modeColumns(mode) {
   if (mode === 'upstream') {
     return [
-      'Ruta_IATA_norm',
+      'IATA_origen_norm',
+      'Ciudad_origen',
+      'Pais_origen',
       'Aeropuerto_llegada_planta',
-      'Ciudad_llegada_planta',
-      'Pais_llegada_planta',
+      'Distancia_aerea_km',
       'Distancia Aeropuerto - Planta',
       'Distancia_total_compuesta_km',
       'Estado'
@@ -105,11 +116,10 @@ function modeColumns(mode) {
   }
   if (mode === 'downstream') {
     return [
-      'Ruta_IATA_norm',
       'Aeropuerto_salida_planta',
       'Ciudad_salida_planta',
       'Pais_salida_planta',
-      'Aeropuerto_llegada',
+      'IATA_destino_norm',
       'Ciudad_llegada',
       'Pais_llegada',
       'Distancia a Aeropuerto',
@@ -120,10 +130,10 @@ function modeColumns(mode) {
   }
   return [
     'Ruta_IATA_norm',
-    'IATA_origen',
+    'IATA_origen_norm',
     'Ciudad_origen',
     'Pais_origen',
-    'IATA_destino',
+    'IATA_destino_norm',
     'Ciudad_destino',
     'Pais_destino',
     'Distancia_aerea_km',
@@ -134,7 +144,8 @@ function modeColumns(mode) {
 function applyModeUI(mode) {
   const isComposite = mode === 'upstream' || mode === 'downstream';
   plantFields.forEach((field) => field.classList.toggle('hidden-block', !isComposite));
-  plantAirportField.classList.toggle('hidden-block', mode !== 'downstream');
+  plantAirportField.classList.toggle('hidden-block', !isComposite);
+  templateLink.href = `/templates/iata?mode=${modeTemplate(mode)}`;
 }
 
 modeTabs.forEach((tab) => {
@@ -280,7 +291,7 @@ form.addEventListener('submit', async (e) => {
     alertText.textContent = `Se detectaron ${totalIssues} filas con observaciones antes de descargar.`;
     (payload.missing_preview || []).slice(0, 10).forEach((row, idx) => {
       const li = document.createElement('li');
-      li.textContent = `#${idx+1}: ${row.Ruta_IATA_norm || row.IATA_origen || '-'} -> ${row.Estado || '-'}`;
+      li.textContent = `#${idx+1}: ${row.Ruta_IATA_norm || row.IATA_origen || row.IATA_destino || '-'} -> ${row.Estado || '-'}`;
       alertList.appendChild(li);
     });
     downloadBtn.disabled = true;

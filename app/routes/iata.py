@@ -4,7 +4,7 @@ import logging
 import math
 from pathlib import Path
 
-from fastapi import APIRouter, File, HTTPException, Request, UploadFile
+from fastapi import APIRouter, File, Form, HTTPException, Request, UploadFile
 import numpy as np
 import pandas as pd
 from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, StreamingResponse
@@ -48,10 +48,24 @@ def download_template():
 
 
 @router.post("/api/iata/preview")
-async def preview_iata(file: UploadFile = File(...)):
+async def preview_iata(
+    file: UploadFile = File(...),
+    composite_mode: str = Form(""),
+    plant_address: str = Form(""),
+    plant_city: str = Form(""),
+    plant_country: str = Form(""),
+    plant_airport_iata: str = Form(""),
+):
     try:
         df = await read_uploaded_table(file)
-        result_df = service.process(df)
+        result_df = service.process(
+            df,
+            composite_mode=composite_mode,
+            plant_address=plant_address,
+            plant_city=plant_city,
+            plant_country=plant_country,
+            plant_airport_iata=plant_airport_iata,
+        )
 
         total = int(len(result_df))
         ok_count = int((result_df["Estado"] == "OK").sum()) if total else 0
@@ -62,6 +76,10 @@ async def preview_iata(file: UploadFile = File(...)):
         distance_series = pd.to_numeric(result_df.get("Distancia_km", 0), errors="coerce")
         distance_series = distance_series.replace([np.inf, -np.inf], np.nan).fillna(0)
         total_distance = _safe_json_float(distance_series.sum())
+
+        composed_series = pd.to_numeric(result_df.get("Distancia_total_compuesta_km", 0), errors="coerce")
+        composed_series = composed_series.replace([np.inf, -np.inf], np.nan).fillna(0)
+        composed_total = _safe_json_float(composed_series.sum())
 
         json_ready_df = _json_safe_df(result_df)
         rows_preview = json_ready_df.head(200).to_dict(orient="records")
@@ -76,6 +94,7 @@ async def preview_iata(file: UploadFile = File(...)):
                     "invalid": invalid_count,
                     "missing": missing_count,
                     "distancia_total_km": total_distance,
+                    "distancia_compuesta_total_km": composed_total,
                 },
                 "rows_preview": rows_preview,
                 "missing_preview": missing_preview,
@@ -90,10 +109,24 @@ async def preview_iata(file: UploadFile = File(...)):
 
 
 @router.post("/api/iata")
-async def process_iata(file: UploadFile = File(...)):
+async def process_iata(
+    file: UploadFile = File(...),
+    composite_mode: str = Form(""),
+    plant_address: str = Form(""),
+    plant_city: str = Form(""),
+    plant_country: str = Form(""),
+    plant_airport_iata: str = Form(""),
+):
     try:
         df = await read_uploaded_table(file)
-        result_df = service.process(df)
+        result_df = service.process(
+            df,
+            composite_mode=composite_mode,
+            plant_address=plant_address,
+            plant_city=plant_city,
+            plant_country=plant_country,
+            plant_airport_iata=plant_airport_iata,
+        )
         excel_bytes = dataframe_to_excel_bytes(result_df, sheet_name="aereo_iata_output")
         return StreamingResponse(
             iter([excel_bytes]),

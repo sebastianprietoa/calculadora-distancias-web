@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 from pathlib import Path
+from time import sleep
 
 import pandas as pd
+import requests
 
 from app.utils.geo import haversine_km
 from app.utils.validators import is_blank, require_columns
@@ -49,9 +51,99 @@ class IATAService:
     def _validate_codes(self, codes: list[str]) -> bool:
         return all(len(code) == 3 for code in codes)
 
-    def process(self, df: pd.DataFrame) -> pd.DataFrame:
+    def _geocode_plant(self, address: str | None, city: str | None, country: str | None) -> tuple[float, float] | None:
+        if is_blank(country):
+            return None
+
+        pieces: list[str] = []
+        if not is_blank(address):
+            pieces.append(str(address).strip())
+        if not is_blank(city):
+            pieces.append(str(city).strip())
+        else:
+            pieces.append(f"capital de {str(country).strip()}")
+        pieces.append(str(country).strip())
+
+        response = requests.get(
+            "https://nominatim.openstreetmap.org/search",
+            params={"q": ", ".join(pieces), "format": "jsonv2", "limit": 1},
+            headers={"User-Agent": "calculadora-distancias-web/0.1 (internal testing)"},
+            timeout=20,
+        )
+        response.raise_for_status()
+        data = response.json()
+        sleep(1)
+        if not data:
+            return None
+        return float(data[0]["lat"]), float(data[0]["lon"])
+
+    def _road_distance_km(self, lat_a: float, lon_a: float, lat_b: float, lon_b: float) -> float | None:
+        url = (
+            "https://router.project-osrm.org/route/v1/driving/"
+            f"{lon_a},{lat_a};{lon_b},{lat_b}"
+        )
+        response = requests.get(url, params={"overview": "false"}, timeout=30)
+        response.raise_for_status()
+        data = response.json()
+        routes = data.get("routes", [])
+        if not routes:
+            return None
+        return round(routes[0]["distance"] / 1000, 2)
+
+    def _default_airport_for_country(self, country: str) -> dict | None:
+        country_match = self.master_df[self.master_df["country"].astype(str).str.strip().str.lower() == country.strip().lower()]
+        if country_match.empty:
+            return None
+        country_match = country_match.sort_values(by=["city", "airport_name"])
+        return country_match.iloc[0].to_dict()
+
+    def process(
+        self,
+        df: pd.DataFrame,
+        composite_mode: str | None = None,
+        plant_address: str | None = None,
+        plant_city: str | None = None,
+        plant_country: str | None = None,
+        plant_airport_iata: str | None = None,
+    ) -> pd.DataFrame:
         require_columns(df, self.required_columns)
         results: list[dict] = []
+
+        mode = (composite_mode or "").strip().lower()
+        if mode and mode not in {"upstream", "downstream"}:
+            raise ValueError("Modo compuesto inválido. Usa upstream o downstream")
+
+        plant_point = None
+        selected_plant_airport = None
+        plant_to_airport_km = None
+
+        if mode:
+            try:
+                plant_point = self._geocode_plant(plant_address, plant_city, plant_country)
+            except Exception as exc:
+                raise ValueError(f"No se pudo geocodificar la ubicación de la planta: {exc}") from exc
+            if plant_point is None:
+                raise ValueError("No se pudo geocodificar la ubicación de la planta")
+
+            if mode == "downstream":
+                if not is_blank(plant_airport_iata):
+                    selected_plant_airport = self._lookup_airport(str(plant_airport_iata).strip().upper())
+                    if selected_plant_airport is None:
+                        raise ValueError("Aeropuerto de salida de planta no encontrado")
+                elif not is_blank(plant_country):
+                    selected_plant_airport = self._default_airport_for_country(str(plant_country))
+                if selected_plant_airport is None:
+                    raise ValueError("No se encontró aeropuerto principal para el país de la planta")
+
+                try:
+                    plant_to_airport_km = self._road_distance_km(
+                        plant_point[0],
+                        plant_point[1],
+                        float(selected_plant_airport["lat"]),
+                        float(selected_plant_airport["lon"]),
+                    )
+                except Exception as exc:
+                    raise ValueError(f"No se pudo calcular distancia planta-aeropuerto: {exc}") from exc
 
         for _, row in df.iterrows():
             route_codes = self._extract_route_codes(row)
@@ -117,28 +209,55 @@ class IATAService:
                 continue
 
             total_distance = round(sum(segment_distances), 2)
-            results.append(
-                {
-                    **row.to_dict(),
-                    "IATA_origen_norm": route_codes[0],
-                    "IATA_destino_norm": route_codes[-1],
-                    "Ruta_IATA_norm": "/".join(route_codes),
-                    "Tramos_calculados": len(segment_distances),
-                    "Detalle_tramos": " | ".join(segment_details),
-                    "Lat_origen": first_airport["lat"] if first_airport else None,
-                    "Lon_origen": first_airport["lon"] if first_airport else None,
-                    "Aeropuerto_origen": first_airport["airport_name"] if first_airport else None,
-                    "Ciudad_origen": first_airport["city"] if first_airport else None,
-                    "Pais_origen": first_airport["country"] if first_airport else None,
-                    "Lat_destino": last_airport["lat"] if last_airport else None,
-                    "Lon_destino": last_airport["lon"] if last_airport else None,
-                    "Aeropuerto_destino": last_airport["airport_name"] if last_airport else None,
-                    "Ciudad_destino": last_airport["city"] if last_airport else None,
-                    "Pais_destino": last_airport["country"] if last_airport else None,
-                    "Distancia_km": total_distance,
-                    "Distancia_km_aerea": total_distance,
-                    "Estado": "OK",
-                }
-            )
+            result_row = {
+                **row.to_dict(),
+                "IATA_origen_norm": route_codes[0],
+                "IATA_destino_norm": route_codes[-1],
+                "Ruta_IATA_norm": "/".join(route_codes),
+                "Tramos_calculados": len(segment_distances),
+                "Detalle_tramos": " | ".join(segment_details),
+                "Lat_origen": first_airport["lat"] if first_airport else None,
+                "Lon_origen": first_airport["lon"] if first_airport else None,
+                "Aeropuerto_origen": first_airport["airport_name"] if first_airport else None,
+                "Ciudad_origen": first_airport["city"] if first_airport else None,
+                "Pais_origen": first_airport["country"] if first_airport else None,
+                "Lat_destino": last_airport["lat"] if last_airport else None,
+                "Lon_destino": last_airport["lon"] if last_airport else None,
+                "Aeropuerto_destino": last_airport["airport_name"] if last_airport else None,
+                "Ciudad_destino": last_airport["city"] if last_airport else None,
+                "Pais_destino": last_airport["country"] if last_airport else None,
+                "Distancia_km": total_distance,
+                "Distancia_km_aerea": total_distance,
+                "Estado": "OK",
+            }
+
+            if mode == "upstream" and plant_point and last_airport:
+                try:
+                    airport_to_plant = self._road_distance_km(
+                        float(last_airport["lat"]),
+                        float(last_airport["lon"]),
+                        plant_point[0],
+                        plant_point[1],
+                    )
+                except Exception:
+                    airport_to_plant = None
+                result_row["Modo_compuesto"] = "upstream"
+                result_row["Distancia Aeropuerto - Planta"] = airport_to_plant
+                result_row["Distancia_total_compuesta_km"] = round(total_distance + (airport_to_plant or 0), 2)
+
+            if mode == "downstream" and plant_point and selected_plant_airport and last_airport:
+                air_from_plant_airport = haversine_km(
+                    float(selected_plant_airport["lat"]),
+                    float(selected_plant_airport["lon"]),
+                    float(last_airport["lat"]),
+                    float(last_airport["lon"]),
+                )
+                result_row["Modo_compuesto"] = "downstream"
+                result_row["Aeropuerto_salida_planta"] = selected_plant_airport["iata_norm"]
+                result_row["Distancia a Aeropuerto"] = plant_to_airport_km
+                result_row["Distancia_aerea_desde_planta_km"] = round(air_from_plant_airport, 2)
+                result_row["Distancia_total_compuesta_km"] = round((plant_to_airport_km or 0) + air_from_plant_airport, 2)
+
+            results.append(result_row)
 
         return pd.DataFrame(results)

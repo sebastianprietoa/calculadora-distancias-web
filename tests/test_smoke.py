@@ -197,3 +197,40 @@ def test_terrestre_template_builder_supports_both_modes():
     assert text_cols == ["Direccion ori", "Ciudad ori", "Pais ori", "Direccion des", "Ciudad des", "Pais des"]
     assert set(coords_cols).issubset(set(auto_cols))
     assert set(text_cols).issubset(set(auto_cols))
+
+
+def test_iata_service_composite_upstream_adds_airport_to_plant_distance(monkeypatch):
+    service = IATAService()
+    monkeypatch.setattr(service, "_geocode_plant", lambda *args, **kwargs: (-33.45, -70.66))
+    monkeypatch.setattr(service, "_road_distance_km", lambda *args, **kwargs: 12.5)
+
+    df = pd.DataFrame([{"IATA_origen": "LIM", "IATA_destino": "SCL"}])
+    result = service.process(
+        df,
+        composite_mode="upstream",
+        plant_country="Chile",
+        plant_city="Santiago",
+    ).iloc[0]
+
+    assert result["Modo_compuesto"] == "upstream"
+    assert result["Distancia Aeropuerto - Planta"] == 12.5
+    assert result["Distancia_total_compuesta_km"] == round(result["Distancia_km"] + 12.5, 2)
+
+
+def test_iata_service_composite_downstream_adds_plant_to_airport_and_air_leg(monkeypatch):
+    service = IATAService()
+    monkeypatch.setattr(service, "_geocode_plant", lambda *args, **kwargs: (-33.45, -70.66))
+    monkeypatch.setattr(service, "_road_distance_km", lambda *args, **kwargs: 15.0)
+
+    df = pd.DataFrame([{"IATA_origen": "LIM", "IATA_destino": "ANF"}])
+    result = service.process(
+        df,
+        composite_mode="downstream",
+        plant_country="Chile",
+        plant_airport_iata="SCL",
+    ).iloc[0]
+
+    assert result["Modo_compuesto"] == "downstream"
+    assert result["Aeropuerto_salida_planta"] == "SCL"
+    assert result["Distancia a Aeropuerto"] == 15.0
+    assert result["Distancia_total_compuesta_km"] >= 15.0

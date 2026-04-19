@@ -8,6 +8,15 @@
 
 <form id="iata-form" class="upload-form" enctype="multipart/form-data">
   <input id="iata-file" type="file" name="file" accept=".xlsx,.csv" required>
+  <select id="iata-composite-mode" name="composite_mode">
+    <option value="" selected>Distancia aérea estándar</option>
+    <option value="upstream">Distancia compuesta Upstream</option>
+    <option value="downstream">Distancia compuesta Downstream</option>
+  </select>
+  <input id="plant-address" type="text" placeholder="Dirección exacta planta (opcional)">
+  <input id="plant-city" type="text" placeholder="Ciudad planta (opcional)">
+  <input id="plant-country" type="text" placeholder="País planta (para compuesto)">
+  <input id="plant-airport" type="text" placeholder="IATA salida planta (downstream opcional)">
   <button class="button" type="submit">Validar archivo (sin descargar)</button>
   <button id="iata-download" class="button secondary" type="button" disabled>Descargar resultado XLSX</button>
 </form>
@@ -28,6 +37,11 @@
 <script>
 const form = document.getElementById('iata-form');
 const fileInput = document.getElementById('iata-file');
+const compositeMode = document.getElementById('iata-composite-mode');
+const plantAddress = document.getElementById('plant-address');
+const plantCity = document.getElementById('plant-city');
+const plantCountry = document.getElementById('plant-country');
+const plantAirport = document.getElementById('plant-airport');
 const statusEl = document.getElementById('iata-status');
 const summaryEl = document.getElementById('iata-summary');
 const alertText = document.getElementById('iata-alert-text');
@@ -44,6 +58,15 @@ const progressBar = document.getElementById('iata-progress-bar');
 const progressText = document.getElementById('iata-progress-text');
 const etaText = document.getElementById('iata-eta-text');
 
+
+
+function appendCompositeFields(fd) {
+  fd.append('composite_mode', compositeMode.value || '');
+  fd.append('plant_address', plantAddress.value || '');
+  fd.append('plant_city', plantCity.value || '');
+  fd.append('plant_country', plantCountry.value || '');
+  fd.append('plant_airport_iata', plantAirport.value || '');
+}
 
 function setProgress(value, etaSeconds) {
   const pct = Math.max(0, Math.min(100, value));
@@ -70,7 +93,8 @@ function buildTable(tableElement, rows) {
 function renderSummary(summary) {
   const items = [
     ['Total', summary.total], ['OK', summary.ok], ['No encontrado', summary.not_found],
-    ['Formato inválido', summary.invalid], ['Faltan datos', summary.missing], ['Distancia total km', summary.distancia_total_km]
+    ['Formato inválido', summary.invalid], ['Faltan datos', summary.missing], ['Distancia total km', summary.distancia_total_km],
+    ['Distancia compuesta km', summary.distancia_compuesta_total_km]
   ];
   summaryEl.innerHTML = items.map(([k,v]) => `<div class="summary-item"><strong>${k}</strong><span>${v ?? 0}</span></div>`).join('');
 }
@@ -83,7 +107,7 @@ ackBtn.addEventListener('click', () => {
 downloadBtn.addEventListener('click', async () => {
   if (!currentFile) return;
   downloadBtn.disabled = true;
-  const fd = new FormData(); fd.append('file', currentFile);
+  const fd = new FormData(); fd.append('file', currentFile); appendCompositeFields(fd);
   const res = await fetch('/api/iata', {method: 'POST', body: fd});
   if (!res.ok) { alert('Error descargando resultado'); downloadBtn.disabled = false; return; }
   const blob = await res.blob();
@@ -101,7 +125,7 @@ form.addEventListener('submit', async (e) => {
   statusEl.textContent = 'Validando...';
   downloadBtn.disabled = true;
   alertList.innerHTML = '';
-  const fd = new FormData(); fd.append('file', file);
+  const fd = new FormData(); fd.append('file', file); appendCompositeFields(fd);
   const startedAt = Date.now();
   const etaTotal = Math.max(5, Math.min(60, file.size / 250000));
   setProgress(1, etaTotal);

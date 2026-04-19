@@ -6,6 +6,7 @@ from fastapi import UploadFile
 
 from app.main import healthcheck
 from app.routes.coordenadas import _json_safe_df, _safe_json_float
+from app.routes.iata import _numeric_series
 from app.routes.terrestre_ruta import _build_template_df
 from app.services.coordenadas_service import CoordenadasService
 from app.services.iata_service import IATAService
@@ -146,6 +147,15 @@ def test_safe_json_float_handles_inf_nan_and_invalid_values():
     assert _safe_json_float(float("nan")) == 0.0
     assert _safe_json_float("abc") == 0.0
     assert _safe_json_float(12.345) == 12.35
+
+
+def test_iata_numeric_series_handles_missing_columns_and_non_finite_values():
+    df_missing = pd.DataFrame([{"x": 1}])
+    assert _numeric_series(df_missing, "Distancia_total_compuesta_km").sum() == 0
+
+    df_values = pd.DataFrame([{"Distancia_total_compuesta_km": "inf"}, {"Distancia_total_compuesta_km": 12.5}])
+    series = _numeric_series(df_values, "Distancia_total_compuesta_km")
+    assert float(series.sum()) == 12.5
 
 
 def test_iata_service_supports_route_and_sums_segments():

@@ -35,6 +35,13 @@ def _safe_json_float(value: object, default: float = 0.0) -> float:
     return round(number, 2)
 
 
+def _numeric_series(df: pd.DataFrame, column: str) -> pd.Series:
+    if column not in df.columns:
+        return pd.Series(dtype=float)
+    series = pd.to_numeric(df[column], errors="coerce")
+    return series.replace([np.inf, -np.inf], np.nan).fillna(0)
+
+
 @router.get("/iata", response_class=HTMLResponse)
 def iata_page(request: Request):
     return templates.TemplateResponse("iata.html", {"request": request})
@@ -86,12 +93,10 @@ async def preview_iata(
         invalid_count = int((result_df["Estado"] == "FORMATO IATA INVÁLIDO").sum()) if total else 0
         missing_count = int((result_df["Estado"] == "FALTAN DATOS").sum()) if total else 0
 
-        distance_series = pd.to_numeric(result_df.get("Distancia_km", 0), errors="coerce")
-        distance_series = distance_series.replace([np.inf, -np.inf], np.nan).fillna(0)
+        distance_series = _numeric_series(result_df, "Distancia_km")
         total_distance = _safe_json_float(distance_series.sum())
 
-        composed_series = pd.to_numeric(result_df.get("Distancia_total_compuesta_km", 0), errors="coerce")
-        composed_series = composed_series.replace([np.inf, -np.inf], np.nan).fillna(0)
+        composed_series = _numeric_series(result_df, "Distancia_total_compuesta_km")
         composed_total = _safe_json_float(composed_series.sum())
 
         json_ready_df = _json_safe_df(result_df)

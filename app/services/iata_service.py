@@ -268,48 +268,6 @@ class IATAService:
                 except Exception as exc:
                     raise ValueError(f"No se pudo calcular distancia planta-aeropuerto: {exc}") from exc
 
-        mode = (composite_mode or "").strip().lower()
-        if mode and mode not in {"upstream", "downstream"}:
-            raise ValueError("Modo compuesto inválido. Usa upstream o downstream")
-
-        if mode == "" and not any(col in df.columns for col in ["IATA_origen", "IATA_destino", "Ruta_IATA"]):
-            raise ValueError("Faltan columnas requeridas para viaje corporativo: IATA_origen / IATA_destino / Ruta_IATA")
-
-        plant_point = None
-        selected_plant_airport = None
-        plant_to_airport_km = None
-
-        if mode:
-            try:
-                plant_point = self._geocode_plant(plant_address, plant_city, plant_country)
-            except Exception as exc:
-                raise ValueError(f"No se pudo geocodificar la ubicación de la planta: {exc}") from exc
-            if plant_point is None:
-                raise ValueError("No se pudo geocodificar la ubicación de la planta")
-
-            if not is_blank(plant_airport_iata):
-                selected_plant_airport = self._lookup_airport(str(plant_airport_iata).strip().upper())
-                if selected_plant_airport is None:
-                    raise ValueError("Aeropuerto de planta no encontrado")
-            elif not is_blank(plant_country):
-                selected_plant_airport = self._default_airport_for_country(str(plant_country))
-
-            if selected_plant_airport is None:
-                raise ValueError("No se encontró aeropuerto principal para el país de la planta")
-            if not self._same_country(selected_plant_airport.get("country"), plant_country):
-                raise ValueError("El aeropuerto de planta debe estar en el mismo país que la planta")
-
-            if mode == "downstream":
-                try:
-                    plant_to_airport_km = self._road_distance_km(
-                        plant_point[0],
-                        plant_point[1],
-                        float(selected_plant_airport["lat"]),
-                        float(selected_plant_airport["lon"]),
-                    )
-                except Exception as exc:
-                    raise ValueError(f"No se pudo calcular distancia planta-aeropuerto: {exc}") from exc
-
         for _, row in df.iterrows():
             if mode == "upstream":
                 origin_airport = self._resolve_row_airport(row, "origin")

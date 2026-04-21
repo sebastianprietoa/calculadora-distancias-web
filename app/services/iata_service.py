@@ -12,6 +12,7 @@ from app.utils.validators import is_blank
 
 BASE_DIR = Path(__file__).resolve().parents[2]
 MASTER_FILE = BASE_DIR / "data" / "masters" / "aeropuertos_maestra.csv"
+SUPPLEMENTAL_MASTER_FILE = BASE_DIR / "data" / "masters" / "aeropuertos_supplemental.csv"
 
 
 class IATAService:
@@ -41,7 +42,18 @@ class IATAService:
     def __init__(self) -> None:
         self.master_df = pd.read_csv(MASTER_FILE)
         self.master_df["iata_norm"] = self.master_df["iata"].astype(str).str.strip().str.upper()
+        self._load_supplemental_airports()
         self._inject_missing_airports()
+
+    def _load_supplemental_airports(self) -> None:
+        if not SUPPLEMENTAL_MASTER_FILE.exists():
+            return
+        supplemental_df = pd.read_csv(SUPPLEMENTAL_MASTER_FILE)
+        if supplemental_df.empty:
+            return
+        supplemental_df["iata_norm"] = supplemental_df["iata"].astype(str).str.strip().str.upper()
+        self.master_df = pd.concat([self.master_df, supplemental_df], ignore_index=True)
+        self.master_df = self.master_df.drop_duplicates(subset=["iata_norm"], keep="first")
 
     def _inject_missing_airports(self) -> None:
         manual_airports = [
@@ -82,9 +94,9 @@ class IATAService:
         iata_norm = str(iata_code).strip().upper()
         iata_norm = self.iata_aliases.get(iata_norm, iata_norm)
         match = self.master_df[self.master_df["iata_norm"] == iata_norm]
-        if match.empty:
-            return None
-        return match.iloc[0].to_dict()
+        if not match.empty:
+            return match.iloc[0].to_dict()
+        return None
 
     def _lookup_airport_by_city_country(self, city: str | None, country: str | None) -> dict | None:
         city_norm = self._normalize_text(city)

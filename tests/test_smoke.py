@@ -207,6 +207,23 @@ def test_iata_service_corporativo_accepts_origen_destino_ruta_headers():
     assert result.iloc[0]["Distancia_aerea_km"] > 0
 
 
+def test_iata_service_falls_back_to_global_iata_catalog_for_corporate_routes():
+    service = IATAService()
+    df = pd.DataFrame(
+        [
+            {"Origen": "BOS", "Destino": "JFK", "Ruta": ""},
+            {"Origen": "", "Destino": "", "Ruta": "AMS/CDG/TRD"},
+        ]
+    )
+    result = service.process(df)
+
+    assert result.iloc[0]["Estado"] == "OK"
+    assert result.iloc[0]["Ruta_IATA_norm"] == "BOS/JFK"
+    assert result.iloc[0]["Distancia_km"] > 0
+    assert result.iloc[1]["Estado"] == "OK"
+    assert result.iloc[1]["Tramos_calculados"] == 2
+
+
 def test_iata_service_rejects_empty_dataframe():
     service = IATAService()
     df = pd.DataFrame(columns=["Origen", "Destino", "Ruta"])

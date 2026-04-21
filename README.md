@@ -46,7 +46,8 @@ data/
 ## Datos auxiliares
 
 - `data/cache/geocache.csv`: caché local para coordenadas.
-- `data/masters/aeropuertos_maestra.csv`: base maestra IATA.
+- `data/masters/aeropuertos_maestra.csv`: base maestra IATA principal.
+- `data/masters/aeropuertos_supplemental.csv`: códigos IATA adicionales para cubrir rutas corporativas frecuentes.
 - `data/templates/*.xlsx`: plantillas descargables desde la app.
 
 ## Notas
@@ -74,4 +75,3 @@ La UI Streamlit incluye:
 - Panel de alertas pre-descarga
 - Resumen inicial "Esperando archivo"
 - Validación previa antes de descargar el XLSX
-

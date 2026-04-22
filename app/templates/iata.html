@@ -1,71 +1,136 @@
+{% set page_title = "Distancias Aereas" %}
 {% extends "base.html" %}
+{% from "_ui_macros.html" import page_header, section_header %}
+
 {% block content %}
-<h1>Distancias Aéreas</h1>
-<p>
-  Elige el modo de cálculo y usa la planilla correspondiente. En viaje corporativo puedes usar
-  <strong>Origen/Destino</strong> o <strong>Ruta</strong> (AAA/BBB/CCC).
-</p>
+{{ page_header(
+  "Modulo 2",
+  "Distancias Aereas",
+  "Calcula distancias aereas segun modo de operacion. En viaje corporativo puedes trabajar con Origen/Destino o con rutas IATA completas del tipo AAA/BBB/CCC."
+) }}
 
-<form id="iata-form" class="upload-form iata-layout" enctype="multipart/form-data">
-  <div class="field-block optional iata-top-tabs">
-    <label>Modo de cálculo</label>
-    <div class="tab-row" id="iata-mode-tabs">
-      <button class="button secondary iata-mode-tab active" type="button" data-mode="">Viaje Corporativo</button>
-      <button class="button secondary iata-mode-tab" type="button" data-mode="upstream">Transporte y Distribución Upstream</button>
-      <button class="button secondary iata-mode-tab" type="button" data-mode="downstream">Transporte y Distribución Downstream</button>
+<form id="iata-form" class="module-form-shell" enctype="multipart/form-data">
+  <section class="card">
+    {{ section_header("Modo de calculo", "Configuracion operativa", "Segmented control", "info") }}
+    <div class="field-block iata-top-tabs">
+      <label>Selecciona el flujo a procesar</label>
+      <div class="tab-row" id="iata-mode-tabs">
+        <button class="button secondary iata-mode-tab active" type="button" data-mode="">Viaje Corporativo</button>
+        <button class="button secondary iata-mode-tab" type="button" data-mode="upstream">Transporte y Distribucion Upstream</button>
+        <button class="button secondary iata-mode-tab" type="button" data-mode="downstream">Transporte y Distribucion Downstream</button>
+      </div>
+      <input type="hidden" id="iata-composite-mode" name="composite_mode" value="">
     </div>
-    <input type="hidden" id="iata-composite-mode" name="composite_mode" value="">
-  </div>
+  </section>
 
-  <div class="card iata-main-panel">
-    <div class="iata-left-actions">
-      <a id="iata-template-link" class="button secondary" href="/templates/iata?mode=corporativo">Descargar planilla</a>
-      <label class="button secondary iata-upload-btn" for="iata-file">Subir planilla</label>
-      <input id="iata-file" type="file" name="file" accept=".xlsx,.csv" required>
-      <div class="upload-hint">Archivo de entrada obligatorio</div>
-    </div>
+  <div class="workspace-grid workspace-grid--double">
+    <section class="card">
+      {{ section_header("Archivo de entrada", "Carga de planilla", "Plantilla adaptable", "success") }}
+      <div class="file-upload-control">
+        <label class="file-upload-field" for="iata-file">
+          <span class="file-upload-kicker">Archivo fuente</span>
+          <strong>Selecciona la planilla del modo activo</strong>
+          <span class="file-upload-copy">Viaje corporativo usa ruta u origen/destino. Upstream y downstream usan plantilla especifica por modo.</span>
+          <span id="iata-file-state" class="file-upload-name">Ningun archivo seleccionado</span>
+          <span class="file-upload-meta">La descarga de plantilla cambia segun el modo seleccionado.</span>
+        </label>
+        <input
+          id="iata-file"
+          class="visually-hidden"
+          type="file"
+          name="file"
+          accept=".xlsx,.csv"
+          required
+          data-file-target="iata-file-state"
+          data-empty-label="Ningun archivo seleccionado"
+        >
+        <div class="inline-actions">
+          <a id="iata-template-link" class="button secondary" href="/templates/iata?mode=corporativo">Descargar planilla</a>
+        </div>
+      </div>
+    </section>
 
-    <div class="iata-right-fields">
-      <div class="field-block optional iata-plant-field">
-        <label for="plant-address">Dirección <span>Opcional</span></label>
-        <input id="plant-address" type="text" placeholder="Ej: Benavente 550, 5502277">
+    <section class="card soft-card">
+      {{ section_header("Parametros de planta", "Campos complementarios", "Modo compuesto", "warning") }}
+      <div class="form-grid">
+        <div class="field-block optional iata-plant-field">
+          <label for="plant-address">Direccion <span>Opcional</span></label>
+          <input id="plant-address" type="text" placeholder="Ej: Benavente 550, Puerto Montt">
+        </div>
+
+        <div class="field-block optional iata-plant-field">
+          <label for="plant-city">Ciudad <span>Opcional</span></label>
+          <input id="plant-city" type="text" placeholder="Ej: Puerto Montt">
+        </div>
+
+        <div class="field-block optional iata-plant-field">
+          <label for="plant-country">Pais <span>Requerido en modo compuesto</span></label>
+          <input id="plant-country" type="text" placeholder="Ej: Chile">
+        </div>
+
+        <div class="field-block optional iata-plant-field" id="iata-plant-airport-field">
+          <label for="plant-airport">IATA aeropuerto planta <span>Opcional si trabajas por pais</span></label>
+          <input id="plant-airport" type="text" placeholder="Ej: PMC">
+        </div>
       </div>
 
-      <div class="field-block optional iata-plant-field">
-        <label for="plant-city">Ciudad <span>Opcional</span></label>
-        <input id="plant-city" type="text" placeholder="Ej: Puerto Montt">
+      <div class="module-note">
+        <p>Los campos de planta solo se muestran cuando el modo activo requiere distancia compuesta.</p>
+        <div class="button-row">
+          <button class="button" type="submit">Validar archivo (sin descargar)</button>
+          <button id="iata-download" class="button secondary" type="button" disabled>Descargar resultado XLSX</button>
+        </div>
       </div>
-
-      <div class="field-block optional iata-plant-field">
-        <label for="plant-country">País <span>Requerido en modo compuesto</span></label>
-        <input id="plant-country" type="text" placeholder="Ej: Chile">
-      </div>
-
-      <div class="field-block optional iata-plant-field" id="iata-plant-airport-field">
-        <label for="plant-airport">IATA aeropuerto planta <span>Opcional (si va vacío se usa país)</span></label>
-        <input id="plant-airport" type="text" placeholder="Ej: PMC">
-      </div>
-
-      <div class="button-row">
-        <button class="button" type="submit">Validar archivo (sin descargar)</button>
-        <button id="iata-download" class="button secondary" type="button" disabled>Descargar resultado XLSX</button>
-      </div>
-    </div>
+    </section>
   </div>
 </form>
 
-<section id="iata-progress-card" class="card">
-  <h3>Procesando archivo</h3>
-  <div class="progress-track"><div id="iata-progress-bar" class="progress-bar" style="width: 0%"></div></div>
-  <p id="iata-progress-text">0% completado</p>
-  <p id="iata-eta-text">Tiempo estimado restante: --</p>
+<div class="workspace-grid">
+  <div class="stack-grid">
+    <section id="iata-progress-card" class="card">
+      {{ section_header("Procesando archivo", "Seguimiento", "Progreso", "info") }}
+      <div class="progress-track"><div id="iata-progress-bar" class="progress-bar" style="width: 0%"></div></div>
+      <div class="status-copy">
+        <p id="iata-progress-text">0% completado</p>
+        <p id="iata-eta-text">Tiempo estimado restante: --</p>
+      </div>
+    </section>
+
+    <section class="card soft-card">
+      {{ section_header("Estado inicial", "Salida del modulo", "Esperando archivo", "neutral") }}
+      <p id="iata-status">Esperando archivo</p>
+    </section>
+  </div>
+
+  <section class="card">
+    {{ section_header("Resumen", "Indicadores agregados") }}
+    <div id="iata-summary" class="summary-grid">
+      <div class="summary-item">
+        <strong>Estado</strong>
+        <span>Esperando archivo</span>
+      </div>
+    </div>
+  </section>
+</div>
+
+<section id="iata-alerts" class="card alert-card">
+  {{ section_header("Alertas pre-descarga", "Revision de validacion", "Revision recomendada", "warning") }}
+  <p id="iata-alert-text">Aun no hay alertas.</p>
+  <ul id="iata-alert-list"></ul>
+  <div class="button-row">
+    <button id="iata-ack" class="button secondary" type="button">Entendido, descargar de todos modos</button>
+  </div>
 </section>
 
-<section class="card"><h3>Estado inicial</h3><p id="iata-status">Esperando archivo</p></section>
-<section id="iata-alerts" class="card alert-card"><h3>Alertas pre-descarga</h3><p id="iata-alert-text">Aún no hay alertas.</p><ul id="iata-alert-list"></ul><button id="iata-ack" class="button" type="button">Entendido, descargar de todos modos</button></section>
-<section class="card"><h3>Resumen</h3><div id="iata-summary" class="summary-grid"><div class="summary-item"><strong>Estado</strong><span>Esperando archivo</span></div></div></section>
-<section id="iata-missing" class="card hidden-block"><h3>Registros con observaciones</h3><div class="table-wrap"><table id="iata-missing-table"></table></div></section>
-<section id="iata-preview" class="card hidden-block"><h3>Vista previa</h3><div class="table-wrap"><table id="iata-preview-table"></table></div></section>
+<section id="iata-missing" class="card hidden-block">
+  {{ section_header("Registros con observaciones", "Filas no listas para exportacion") }}
+  <div class="table-wrap"><table id="iata-missing-table"></table></div>
+</section>
+
+<section id="iata-preview" class="card hidden-block">
+  {{ section_header("Vista previa", "Salida operacional") }}
+  <div class="table-wrap"><table id="iata-preview-table"></table></div>
+</section>
 
 <script>
 const form = document.getElementById('iata-form');
@@ -181,7 +246,7 @@ function buildTable(tableElement, rows, columns = null) {
     return;
   }
   const cols = columns || Object.keys(rows[0]);
-  tableElement.innerHTML = `<thead><tr>${cols.map(c => `<th>${c}</th>`).join('')}</tr></thead>`;
+  tableElement.innerHTML = `<thead><tr>${cols.map((c) => `<th>${c}</th>`).join('')}</tr></thead>`;
   const body = document.createElement('tbody');
   rows.forEach((row) => {
     const tr = document.createElement('tr');
@@ -195,10 +260,10 @@ function buildTable(tableElement, rows, columns = null) {
 function renderSummary(summary) {
   const items = [
     ['Total', summary.total], ['OK', summary.ok], ['No encontrado', summary.not_found],
-    ['Formato inválido', summary.invalid], ['Faltan datos', summary.missing], ['Distancia total km', summary.distancia_total_km],
+    ['Formato invalido', summary.invalid], ['Faltan datos', summary.missing], ['Distancia total km', summary.distancia_total_km],
     ['Distancia compuesta km', summary.distancia_compuesta_total_km]
   ];
-  summaryEl.innerHTML = items.map(([k,v]) => `<div class="summary-item"><strong>${k}</strong><span>${v ?? 0}</span></div>`).join('');
+  summaryEl.innerHTML = items.map(([k, v]) => `<div class="summary-item"><strong>${k}</strong><span>${v ?? 0}</span></div>`).join('');
 }
 
 ackBtn.addEventListener('click', () => {
@@ -209,12 +274,23 @@ ackBtn.addEventListener('click', () => {
 downloadBtn.addEventListener('click', async () => {
   if (!currentFile) return;
   downloadBtn.disabled = true;
-  const fd = new FormData(); fd.append('file', currentFile); appendCompositeFields(fd);
-  const res = await fetch('/api/iata', {method: 'POST', body: fd});
-  if (!res.ok) { alert('Error descargando resultado'); downloadBtn.disabled = false; return; }
+  const fd = new FormData();
+  fd.append('file', currentFile);
+  appendCompositeFields(fd);
+  const res = await fetch('/api/iata', { method: 'POST', body: fd });
+  if (!res.ok) {
+    alert('Error descargando resultado');
+    downloadBtn.disabled = false;
+    return;
+  }
   const blob = await res.blob();
   const url = window.URL.createObjectURL(blob);
-  const a = document.createElement('a'); a.href = url; a.download = 'iata_output.xlsx'; document.body.appendChild(a); a.click(); a.remove();
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'iata_output.xlsx';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
   window.URL.revokeObjectURL(url);
   downloadBtn.disabled = false;
 });
@@ -227,7 +303,9 @@ form.addEventListener('submit', async (e) => {
   statusEl.textContent = 'Validando...';
   downloadBtn.disabled = true;
   alertList.innerHTML = '';
-  const fd = new FormData(); fd.append('file', file); appendCompositeFields(fd);
+  const fd = new FormData();
+  fd.append('file', file);
+  appendCompositeFields(fd);
   const startedAt = Date.now();
   const etaTotal = Math.max(5, Math.min(60, file.size / 250000));
   setProgress(1, etaTotal);
@@ -265,7 +343,7 @@ form.addEventListener('submit', async (e) => {
       try {
         resolve(JSON.parse(xhr.responseText));
       } catch (_e) {
-        reject(new Error('Respuesta inválida del servidor'));
+        reject(new Error('Respuesta invalida del servidor'));
       }
     };
     xhr.onerror = () => {
@@ -278,7 +356,7 @@ form.addEventListener('submit', async (e) => {
 
   if (!payload) return;
   setProgress(100, 0);
-  statusEl.textContent = 'Validación completada';
+  statusEl.textContent = 'Validacion completada';
   renderSummary(payload.summary || {});
   buildTable(previewTable, payload.rows_preview || [], modeColumns(compositeMode.value));
   buildTable(missingTable, payload.missing_preview || []);
@@ -291,7 +369,7 @@ form.addEventListener('submit', async (e) => {
     alertText.textContent = `Se detectaron ${totalIssues} filas con observaciones antes de descargar.`;
     (payload.missing_preview || []).slice(0, 10).forEach((row, idx) => {
       const li = document.createElement('li');
-      li.textContent = `#${idx+1}: ${row.Ruta_IATA_norm || row.IATA_origen || row.IATA_destino || '-'} -> ${row.Estado || '-'}`;
+      li.textContent = `#${idx + 1}: ${row.Ruta_IATA_norm || row.IATA_origen || row.IATA_destino || '-'} -> ${row.Estado || '-'}`;
       alertList.appendChild(li);
     });
     downloadBtn.disabled = true;

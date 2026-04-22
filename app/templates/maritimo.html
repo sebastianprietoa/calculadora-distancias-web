@@ -1,34 +1,101 @@
+{% set page_title = "Distancias Maritimas" %}
 {% extends "base.html" %}
-{% block content %}
-<h1>Distancias Maritimas</h1>
-<p>
-  Sube una planilla con <strong>codigo de puerto</strong> o con <strong>ciudad + pais</strong> por origen y destino.
-  Si solo viene el pais, se intenta con el puerto principal disponible en el catalogo. La busqueda tolera tildes,
-  variantes de pais y errores menores de escritura.
-</p>
+{% from "_ui_macros.html" import page_header, section_header %}
 
-<div class="actions">
-  <a class="button secondary" href="/templates/maritimo">Descargar plantilla</a>
+{% block content %}
+{{ page_header(
+  "Modulo 4",
+  "Distancias Maritimas",
+  "Calcula distancia maritima por codigo de puerto o por ciudad y pais. Si solo existe el pais, el modulo intenta resolver con el puerto principal y marca Distancia Proxy cuando corresponde."
+) }}
+
+<div class="workspace-grid">
+  <form id="maritimo-form" class="card module-form-shell" enctype="multipart/form-data">
+    {{ section_header("Carga del archivo", "Entrada maritima", "Catalogo consolidado", "info") }}
+    <div class="module-stage-grid">
+      <div class="file-upload-control">
+        <label class="file-upload-field" for="maritimo-file">
+          <span class="file-upload-kicker">Archivo fuente</span>
+          <strong>Sube una planilla con codigo de puerto o ciudad y pais</strong>
+          <span class="file-upload-copy">El sistema admite combinaciones por codigo, ciudad, pais y fallback proxy por mismo pais.</span>
+          <span id="maritimo-file-state" class="file-upload-name">Ningun archivo seleccionado</span>
+          <span class="file-upload-meta">La descarga final se entrega en km con observacion y tipo de distancia.</span>
+        </label>
+        <input
+          id="maritimo-file"
+          class="visually-hidden"
+          type="file"
+          name="file"
+          accept=".xlsx,.csv"
+          required
+          data-file-target="maritimo-file-state"
+          data-empty-label="Ningun archivo seleccionado"
+        >
+        <div class="inline-actions">
+          <a class="button secondary" href="/templates/maritimo">Descargar plantilla</a>
+        </div>
+      </div>
+
+      <div class="module-note">
+        <h3>Reglas de resolucion</h3>
+        <ul class="check-list">
+          <li>Busca primero por codigo de puerto cuando viene informado.</li>
+          <li>Si no hay codigo util, intenta por ciudad y pais con tolerancia a variantes.</li>
+          <li>Si no existe la ciudad, entrega un puerto proxy del mismo pais y lo marca explicitamente.</li>
+        </ul>
+        <div class="button-row">
+          <button class="button" type="submit">Validar archivo (sin descargar)</button>
+          <button id="maritimo-download" class="button secondary" type="button" disabled>Descargar resultado XLSX</button>
+        </div>
+      </div>
+    </div>
+  </form>
+
+  <div class="stack-grid">
+    <section id="maritimo-progress-card" class="card">
+      {{ section_header("Procesando archivo", "Seguimiento", "Progreso", "info") }}
+      <div class="progress-track"><div id="maritimo-progress-bar" class="progress-bar" style="width: 0%"></div></div>
+      <div class="status-copy">
+        <p id="maritimo-progress-text">0% completado</p>
+        <p id="maritimo-eta-text">Tiempo estimado restante: --</p>
+      </div>
+    </section>
+
+    <section class="card soft-card">
+      {{ section_header("Estado inicial", "Salida del modulo", "Esperando archivo", "neutral") }}
+      <p id="maritimo-status">Esperando archivo</p>
+    </section>
+
+    <section class="card">
+      {{ section_header("Resumen", "Indicadores agregados") }}
+      <div id="maritimo-summary" class="summary-grid">
+        <div class="summary-item">
+          <strong>Estado</strong>
+          <span>Esperando archivo</span>
+        </div>
+      </div>
+    </section>
+  </div>
 </div>
 
-<form id="maritimo-form" class="upload-form" enctype="multipart/form-data">
-  <input id="maritimo-file" type="file" name="file" accept=".xlsx,.csv" required>
-  <button class="button" type="submit">Validar archivo (sin descargar)</button>
-  <button id="maritimo-download" class="button secondary" type="button" disabled>Descargar resultado XLSX</button>
-</form>
-
-<section id="maritimo-progress-card" class="card">
-  <h3>Procesando archivo</h3>
-  <div class="progress-track"><div id="maritimo-progress-bar" class="progress-bar" style="width: 0%"></div></div>
-  <p id="maritimo-progress-text">0% completado</p>
-  <p id="maritimo-eta-text">Tiempo estimado restante: --</p>
+<section class="card alert-card">
+  {{ section_header("Alertas pre-descarga", "Revision de validacion", "Revision recomendada", "warning") }}
+  <p id="maritimo-alert-text">Aun no hay alertas.</p>
+  <ul id="maritimo-alert-list"></ul>
+  <div class="button-row">
+    <button id="maritimo-ack" class="button secondary" type="button">Entendido, descargar de todos modos</button>
+  </div>
 </section>
 
-<section class="card"><h3>Estado inicial</h3><p id="maritimo-status">Esperando archivo</p></section>
-<section class="card alert-card"><h3>Alertas pre-descarga</h3><p id="maritimo-alert-text">Aun no hay alertas.</p><ul id="maritimo-alert-list"></ul><button id="maritimo-ack" class="button" type="button">Entendido, descargar de todos modos</button></section>
-<section class="card"><h3>Resumen</h3><div id="maritimo-summary" class="summary-grid"><div class="summary-item"><strong>Estado</strong><span>Esperando archivo</span></div></div></section>
-<section id="maritimo-missing" class="card hidden-block"><h3>Registros con observaciones</h3><div class="table-wrap"><table id="maritimo-missing-table"></table></div></section>
-<section id="maritimo-preview" class="card hidden-block"><h3>Vista previa</h3><div class="table-wrap"><table id="maritimo-preview-table"></table></div></section>
+<section id="maritimo-missing" class="card hidden-block">
+  {{ section_header("Registros con observaciones", "Filas no listas para exportacion") }}
+  <div class="table-wrap"><table id="maritimo-missing-table"></table></div>
+</section>
+
+<section id="maritimo-preview" class="card hidden-block">
+  {{ section_header("Vista previa", "Salida operacional") }}
+  <div class="table-wrap"><table id="maritimo-preview-table"></table></div>
+</section>
 
 <script>
 const form = document.getElementById('maritimo-form');
@@ -73,7 +140,7 @@ function buildTable(tableElement, rows, columns = null) {
     return;
   }
   const cols = columns || Object.keys(rows[0]);
-  tableElement.innerHTML = `<thead><tr>${cols.map(c => `<th>${c}</th>`).join('')}</tr></thead>`;
+  tableElement.innerHTML = `<thead><tr>${cols.map((c) => `<th>${c}</th>`).join('')}</tr></thead>`;
   const body = document.createElement('tbody');
   rows.forEach((row) => {
     const tr = document.createElement('tr');
@@ -90,7 +157,7 @@ function renderSummary(summary) {
     ['Formato invalido', summary.invalid], ['Faltantes', summary.missing],
     ['Distancia Proxy', summary.proxy], ['Distancia total km', summary.distancia_total_km]
   ];
-  summaryEl.innerHTML = items.map(([k,v]) => `<div class="summary-item"><strong>${k}</strong><span>${v ?? 0}</span></div>`).join('');
+  summaryEl.innerHTML = items.map(([k, v]) => `<div class="summary-item"><strong>${k}</strong><span>${v ?? 0}</span></div>`).join('');
 }
 
 ackBtn.addEventListener('click', () => {
@@ -103,7 +170,7 @@ downloadBtn.addEventListener('click', async () => {
   downloadBtn.disabled = true;
   const fd = new FormData();
   fd.append('file', currentFile);
-  const res = await fetch('/api/maritimo', {method: 'POST', body: fd});
+  const res = await fetch('/api/maritimo', { method: 'POST', body: fd });
   if (!res.ok) {
     alert('Error descargando resultado');
     downloadBtn.disabled = false;

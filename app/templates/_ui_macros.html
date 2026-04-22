@@ -1,0 +1,63 @@
+{% macro badge(text, tone='neutral') -%}
+<span class="badge badge--{{ tone }}">{{ text }}</span>
+{%- endmacro %}
+
+{% macro page_header(eyebrow, title, description, stat_label=None, stat_value=None, tone='success') -%}
+<section class="page-hero">
+  <div class="page-hero__content">
+    {% if eyebrow %}
+    <p class="page-eyebrow">{{ eyebrow }}</p>
+    {% endif %}
+    <h1>{{ title }}</h1>
+    <p>{{ description }}</p>
+  </div>
+  {% if stat_label or stat_value %}
+  <aside class="page-hero__aside">
+    <div class="hero-stat hero-stat--{{ tone }}">
+      <span class="hero-stat__label">{{ stat_label }}</span>
+      <strong>{{ stat_value }}</strong>
+    </div>
+  </aside>
+  {% endif %}
+</section>
+{%- endmacro %}
+
+{% macro section_header(title, subtitle=None, badge_text=None, badge_tone='neutral') -%}
+<div class="section-header">
+  <div>
+    {% if subtitle %}
+    <p class="section-kicker">{{ subtitle }}</p>
+    {% endif %}
+    <h2>{{ title }}</h2>
+  </div>
+  {% if badge_text %}
+  {{ badge(badge_text, badge_tone) }}
+  {% endif %}
+</div>
+{%- endmacro %}
+
+{% macro tool_card(tool, index) -%}
+<article class="dashboard-card dashboard-card--{{ tool.theme }}">
+  <div class="dashboard-card__top">
+    <span class="dashboard-card__index">{{ '%02d' % index }}</span>
+    {% if tool.template_path %}
+    <a class="button secondary" href="{{ tool.template_path }}">Plantilla</a>
+    {% endif %}
+  </div>
+  <div class="dashboard-card__body">
+    <h2>{{ tool.name }}</h2>
+    <p>{{ tool.description }}</p>
+    <ul class="dashboard-list">
+      {% for highlight in tool.highlights %}
+      <li>{{ highlight }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+  <div class="dashboard-card__footer">
+    <span class="dashboard-card__meta">{{ tool.meta }}</span>
+    <div class="dashboard-card__actions">
+      <a class="button" href="{{ tool.path }}">Abrir modulo</a>
+    </div>
+  </div>
+</article>
+{%- endmacro %}

@@ -32253,5 +32253,305 @@
     "distance_nm": null,
     "status": "error",
     "error": "HTTP 500: {\"errorCode\":500,\"message\":\"An unexpected error has occurred\",\"details\":[],\"time\":\"2026-04-22T02:14:26.942346177Z\"}"
+  },
+  "NICIO__ISBOL__IMO_9706906": {
+    "distance_nm": 5060.477223571956,
+    "status": "ok",
+    "error": null
+  },
+  "NICIO__ISBUD__IMO_9706906": {
+    "distance_nm": 5078.690393789076,
+    "status": "ok",
+    "error": null
+  },
+  "NICIO__IEDFY__IMO_9706906": {
+    "distance_nm": 5369.2137168569625,
+    "status": "ok",
+    "error": null
+  },
+  "NICIO__IEEKY__IMO_9706906": {
+    "distance_nm": 5270.099246166376,
+    "status": "ok",
+    "error": null
+  },
+  "NICIO__IMDGS__IMO_9706906": {
+    "distance_nm": 5376.755710865415,
+    "status": "ok",
+    "error": null
+  },
+  "NICIO__IMPEL__IMO_9706906": {
+    "distance_nm": 5346.1954478672,
+    "status": "ok",
+    "error": null
+  },
+  "NICIO__ITACT__IMO_9706906": {
+    "distance_nm": 6156.518320078728,
+    "status": "ok",
+    "error": null
+  },
+  "NICIO__ITBCB__IMO_9706906": {
+    "distance_nm": 6119.035513490522,
+    "status": "ok",
+    "error": null
+  },
+  "NICIO__JESTH__IMO_9706906": {
+    "distance_nm": 5302.268794986643,
+    "status": "ok",
+    "error": null
+  },
+  "NICIO__JESAB__IMO_9706906": {
+    "distance_nm": 5297.36862125731,
+    "status": "ok",
+    "error": null
+  },
+  "NICIO__LVMRX__IMO_9706906": {
+    "distance_nm": 6411.485818884485,
+    "status": "ok",
+    "error": null
+  },
+  "NICIO__LVLPX__IMO_9706906": {
+    "distance_nm": 6298.331635312655,
+    "status": "ok",
+    "error": null
+  },
+  "NICIO__LTMLM__IMO_9706906": {
+    "distance_nm": 6300.209025584023,
+    "status": "ok",
+    "error": null
+  },
+  "NICIO__LTMOM__IMO_9706906": {
+    "distance_nm": 6300.52619536403,
+    "status": "ok",
+    "error": null
+  },
+  "NICIO__LULUX__IMO_9706906": {
+    "distance_nm": null,
+    "status": "error",
+    "error": "HTTP 500: {\"errorCode\":500,\"message\":\"An unexpected error has occurred\",\"details\":[],\"time\":\"2026-04-22T02:16:12.680147526Z\"}"
+  },
+  "NICIO__LUXXX__IMO_9706906": {
+    "distance_nm": null,
+    "status": "error",
+    "error": "HTTP 500: {\"errorCode\":500,\"message\":\"An unexpected error has occurred\",\"details\":[],\"time\":\"2026-04-22T02:16:20.351156393Z\"}"
+  },
+  "NICIO__MTFLO__IMO_9706906": {
+    "distance_nm": 6084.90713574346,
+    "status": "ok",
+    "error": null
+  },
+  "NICIO__MTBAL__IMO_9706906": {
+    "distance_nm": 6082.944183810141,
+    "status": "ok",
+    "error": null
+  },
+  "NICIO__MDXXX__IMO_9706906": {
+    "distance_nm": null,
+    "status": "error",
+    "error": "HTTP 500: {\"errorCode\":500,\"message\":\"An unexpected error has occurred\",\"details\":[],\"time\":\"2026-04-22T02:16:45.178021399Z\"}"
+  },
+  "NICIO__MDGIU__IMO_9706906": {
+    "distance_nm": 7179.693143261305,
+    "status": "ok",
+    "error": null
+  },
+  "NICIO__MCMCM__IMO_9706906": {
+    "distance_nm": 5868.3330928320565,
+    "status": "ok",
+    "error": null
+  },
+  "NICIO__MCMON__IMO_9706906": {
+    "distance_nm": 5877.054684339667,
+    "status": "ok",
+    "error": null
+  },
+  "NICIO__MEHNO__IMO_9706906": {
+    "distance_nm": 6475.137710295432,
+    "status": "ok",
+    "error": null
+  },
+  "NICIO__MEBAR__IMO_9706906": {
+    "distance_nm": 6457.543346659146,
+    "status": "ok",
+    "error": null
+  },
+  "NICIO__NLAMS__IMO_9706906": {
+    "distance_nm": 5567.459479129948,
+    "status": "ok",
+    "error": null
+  },
+  "NICIO__NLEIN__IMO_9706906": {
+    "distance_nm": 5666.590340374479,
+    "status": "ok",
+    "error": null
+  },
+  "NICIO__MKDKJ__IMO_9706906": {
+    "distance_nm": 6845.296421524105,
+    "status": "ok",
+    "error": null
+  },
+  "NICIO__MKSNI__IMO_9706906": {
+    "distance_nm": 6875.325035205881,
+    "status": "ok",
+    "error": null
+  },
+  "NICIO__NOBGO__IMO_9706906": {
+    "distance_nm": 5674.706327825942,
+    "status": "ok",
+    "error": null
+  },
+  "NICIO__NOBOO__IMO_9706906": {
+    "distance_nm": 5963.662937613921,
+    "status": "ok",
+    "error": null
+  },
+  "NICIO__PLBEK__IMO_9706906": {
+    "distance_nm": 6279.802676677015,
+    "status": "ok",
+    "error": null
+  },
+  "NICIO__PLOSD__IMO_9706906": {
+    "distance_nm": 6276.241704242074,
+    "status": "ok",
+    "error": null
+  },
+  "NICIO__PTSMT__IMO_9706906": {
+    "distance_nm": 4192.65619068633,
+    "status": "ok",
+    "error": null
+  },
+  "NICIO__PTFAO__IMO_9706906": {
+    "distance_nm": 5000.46228464694,
+    "status": "ok",
+    "error": null
+  },
+  "NICIO__ROCAF__IMO_9706906": {
+    "distance_nm": 6703.9237254415175,
+    "status": "ok",
+    "error": null
+  },
+  "NICIO__ROMAG__IMO_9706906": {
+    "distance_nm": 7065.831414442348,
+    "status": "ok",
+    "error": null
+  },
+  "NICIO__RUTAM__IMO_9706906": {
+    "distance_nm": 7316.210585090876,
+    "status": "ok",
+    "error": null
+  },
+  "NICIO__RUMOW__IMO_9706906": {
+    "distance_nm": 7237.232201609601,
+    "status": "ok",
+    "error": null
+  },
+  "NICIO__SMAQ8__IMO_9706906": {
+    "distance_nm": null,
+    "status": "error",
+    "error": "HTTP 500: {\"errorCode\":500,\"message\":\"An unexpected error has occurred\",\"details\":[],\"time\":\"2026-04-22T02:19:30.292110858Z\"}"
+  },
+  "NICIO__RSXXX__IMO_9706906": {
+    "distance_nm": null,
+    "status": "error",
+    "error": "HTTP 500: {\"errorCode\":500,\"message\":\"An unexpected error has occurred\",\"details\":[],\"time\":\"2026-04-22T02:19:37.961040389Z\"}"
+  },
+  "NICIO__RSAPT__IMO_9706906": {
+    "distance_nm": null,
+    "status": "error",
+    "error": "HTTP 500: {\"errorCode\":500,\"message\":\"not trade region found for : RSAPT\",\"details\":null,\"time\":\"2026-04-22T02:20:06.391249161Z\"}"
+  },
+  "NICIO__SKBAB__IMO_9706906": {
+    "distance_nm": null,
+    "status": "error",
+    "error": "HTTP 500: {\"errorCode\":500,\"message\":\"An unexpected error has occurred\",\"details\":[],\"time\":\"2026-04-22T02:20:14.200919219Z\"}"
+  },
+  "NICIO__SKKNP__IMO_9706906": {
+    "distance_nm": null,
+    "status": "error",
+    "error": "HTTP 500: {\"errorCode\":500,\"message\":\"An unexpected error has occurred\",\"details\":[],\"time\":\"2026-04-22T02:20:21.938324258Z\"}"
+  },
+  "NICIO__SIPOW__IMO_9706906": {
+    "distance_nm": null,
+    "status": "error",
+    "error": "HTTP 500: {\"errorCode\":500,\"message\":\"An unexpected error has occurred\",\"details\":[],\"time\":\"2026-04-22T02:20:29.771173104Z\"}"
+  },
+  "NICIO__SIJCE__IMO_9706906": {
+    "distance_nm": 6794.222237891824,
+    "status": "ok",
+    "error": null
+  },
+  "NICIO__ESCAR__IMO_9706906": {
+    "distance_nm": 5336.205894062806,
+    "status": "ok",
+    "error": null
+  },
+  "NICIO__ESPTN__IMO_9706906": {
+    "distance_nm": 5140.754458931007,
+    "status": "ok",
+    "error": null
+  },
+  "NICIO__SJBAR__IMO_9706906": {
+    "distance_nm": 6102.207229957068,
+    "status": "ok",
+    "error": null
+  },
+  "NICIO__SJSVE__IMO_9706906": {
+    "distance_nm": 6108.26797130734,
+    "status": "ok",
+    "error": null
+  },
+  "NICIO__SEGOT__IMO_9706906": {
+    "distance_nm": 5871.443919941146,
+    "status": "ok",
+    "error": null
+  },
+  "NICIO__SEHAD__IMO_9706906": {
+    "distance_nm": 5933.913157994525,
+    "status": "ok",
+    "error": null
+  },
+  "NICIO__CHXXX__IMO_9706906": {
+    "distance_nm": null,
+    "status": "error",
+    "error": "HTTP 500: {\"errorCode\":500,\"message\":\"An unexpected error has occurred\",\"details\":[],\"time\":\"2026-04-22T02:21:27.797408438Z\"}"
+  },
+  "NICIO__CHGTT__IMO_9706906": {
+    "distance_nm": 5974.409808101331,
+    "status": "ok",
+    "error": null
+  },
+  "NICIO__UAODS__IMO_9706906": {
+    "distance_nm": 7243.309874982594,
+    "status": "ok",
+    "error": null
+  },
+  "NICIO__UAILK__IMO_9706906": {
+    "distance_nm": 7234.851426169524,
+    "status": "ok",
+    "error": null
+  },
+  "NICIO__GBBOH__IMO_9706906": {
+    "distance_nm": 5314.832498196997,
+    "status": "ok",
+    "error": null
+  },
+  "NICIO__GBLBA__IMO_9706906": {
+    "distance_nm": 5679.777903270174,
+    "status": "ok",
+    "error": null
+  },
+  "NICIO__AXMHQ__IMO_9706906": {
+    "distance_nm": 6415.170505360903,
+    "status": "ok",
+    "error": null
+  },
+  "NIPSN__ALROM__IMO_9706906": {
+    "distance_nm": 6406.589634121839,
+    "status": "ok",
+    "error": null
+  },
+  "NIPSN__ALSAR__IMO_9706906": {
+    "distance_nm": 6353.765813394499,
+    "status": "ok",
+    "error": null
   }
 }

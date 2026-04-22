@@ -1,34 +1,108 @@
+{% set page_title = "Terrestre por ruta" %}
 {% extends "base.html" %}
+{% from "_ui_macros.html" import page_header, section_header %}
+
 {% block content %}
-<h1>Terrestre por ruta</h1>
-<p>Sube .xlsx/.csv con coordenadas (<strong>Latitud ori</strong>, <strong>Longitud ori</strong>, <strong>Latitud des</strong>, <strong>Longitud des</strong>) o con texto (<strong>Dirección/Ciudad/País</strong> por origen y destino). Si no hay ciudad, se intenta con la capital del país.</p>
-<div class="actions">
-  <a id="terrestre-template-link" class="button secondary" href="/templates/terrestre-ruta?mode=auto">Descargar plantilla</a>
+{{ page_header(
+  "Modulo 3",
+  "Terrestre por ruta",
+  "Calcula distancia y duracion por carretera usando coordenadas o texto de origen y destino. Si falta la ciudad, el modulo puede apoyarse en la capital del pais."
+) }}
+
+<div class="workspace-grid">
+  <form id="terrestre-form" class="card module-form-shell" enctype="multipart/form-data">
+    {{ section_header("Entrada del modulo", "Carga y configuracion", "OSRM operativo", "warning") }}
+    <div class="module-stage-grid">
+      <div class="file-upload-control">
+        <label class="file-upload-field" for="terrestre-file">
+          <span class="file-upload-kicker">Archivo fuente</span>
+          <strong>Sube coordenadas o direccion, ciudad y pais</strong>
+          <span class="file-upload-copy">El modulo acepta CSV y XLSX con cualquiera de los formatos habilitados.</span>
+          <span id="terrestre-file-state" class="file-upload-name">Ningun archivo seleccionado</span>
+          <span class="file-upload-meta">Auto intenta detectar el tipo de entrada antes de procesar.</span>
+        </label>
+        <input
+          id="terrestre-file"
+          class="visually-hidden"
+          type="file"
+          name="file"
+          accept=".xlsx,.csv"
+          required
+          data-file-target="terrestre-file-state"
+          data-empty-label="Ningun archivo seleccionado"
+        >
+        <div class="inline-actions">
+          <a id="terrestre-template-link" class="button secondary" href="/templates/terrestre-ruta?mode=auto">Descargar plantilla</a>
+        </div>
+      </div>
+
+      <div class="module-note">
+        <div class="field-block">
+          <label for="terrestre-mode">Modo de entrada</label>
+          <select id="terrestre-mode" name="mode">
+            <option value="auto" selected>Auto (coordenadas, o direccion/ciudad/pais)</option>
+            <option value="coordenadas">Solo coordenadas</option>
+            <option value="direccion">Solo direccion/ciudad/pais</option>
+          </select>
+        </div>
+        <ul class="check-list">
+          <li>Coordenadas: Latitud ori, Longitud ori, Latitud des, Longitud des.</li>
+          <li>Texto: Direccion, Ciudad y Pais por origen y destino.</li>
+          <li>La plantilla cambia automaticamente con el modo seleccionado.</li>
+        </ul>
+        <div class="button-row">
+          <button class="button" type="submit">Validar archivo (sin descargar)</button>
+          <button id="terrestre-download" class="button secondary" type="button" disabled>Descargar resultado XLSX</button>
+        </div>
+      </div>
+    </div>
+  </form>
+
+  <div class="stack-grid">
+    <section id="terrestre-progress-card" class="card">
+      {{ section_header("Procesando archivo", "Seguimiento", "Progreso", "warning") }}
+      <div class="progress-track"><div id="terrestre-progress-bar" class="progress-bar" style="width: 0%"></div></div>
+      <div class="status-copy">
+        <p id="terrestre-progress-text">0% completado</p>
+        <p id="terrestre-eta-text">Tiempo estimado restante: --</p>
+      </div>
+    </section>
+
+    <section class="card soft-card">
+      {{ section_header("Estado inicial", "Salida del modulo", "Esperando archivo", "neutral") }}
+      <p id="terrestre-status">Esperando archivo</p>
+    </section>
+
+    <section class="card">
+      {{ section_header("Resumen", "Indicadores agregados") }}
+      <div id="terrestre-summary" class="summary-grid">
+        <div class="summary-item">
+          <strong>Estado</strong>
+          <span>Esperando archivo</span>
+        </div>
+      </div>
+    </section>
+  </div>
 </div>
 
-<form id="terrestre-form" class="upload-form" enctype="multipart/form-data">
-  <input id="terrestre-file" type="file" name="file" accept=".xlsx,.csv" required>
-  <select id="terrestre-mode" name="mode">
-    <option value="auto" selected>Auto (coordenadas, o dirección/ciudad/país)</option>
-    <option value="coordenadas">Solo coordenadas</option>
-    <option value="direccion">Solo dirección/ciudad/país</option>
-  </select>
-  <button class="button" type="submit">Validar archivo (sin descargar)</button>
-  <button id="terrestre-download" class="button secondary" type="button" disabled>Descargar resultado XLSX</button>
-</form>
-
-<section id="terrestre-progress-card" class="card">
-  <h3>Procesando archivo</h3>
-  <div class="progress-track"><div id="terrestre-progress-bar" class="progress-bar" style="width: 0%"></div></div>
-  <p id="terrestre-progress-text">0% completado</p>
-  <p id="terrestre-eta-text">Tiempo estimado restante: --</p>
+<section class="card alert-card">
+  {{ section_header("Alertas pre-descarga", "Revision de validacion", "Revision recomendada", "warning") }}
+  <p id="terrestre-alert-text">Aun no hay alertas.</p>
+  <ul id="terrestre-alert-list"></ul>
+  <div class="button-row">
+    <button id="terrestre-ack" class="button secondary" type="button">Entendido, descargar de todos modos</button>
+  </div>
 </section>
 
-<section class="card"><h3>Estado inicial</h3><p id="terrestre-status">Esperando archivo</p></section>
-<section class="card alert-card"><h3>Alertas pre-descarga</h3><p id="terrestre-alert-text">Aún no hay alertas.</p><ul id="terrestre-alert-list"></ul><button id="terrestre-ack" class="button" type="button">Entendido, descargar de todos modos</button></section>
-<section class="card"><h3>Resumen</h3><div id="terrestre-summary" class="summary-grid"><div class="summary-item"><strong>Estado</strong><span>Esperando archivo</span></div></div></section>
-<section id="terrestre-missing" class="card hidden-block"><h3>Registros con observaciones</h3><div class="table-wrap"><table id="terrestre-missing-table"></table></div></section>
-<section id="terrestre-preview" class="card hidden-block"><h3>Vista previa</h3><div class="table-wrap"><table id="terrestre-preview-table"></table></div></section>
+<section id="terrestre-missing" class="card hidden-block">
+  {{ section_header("Registros con observaciones", "Filas no listas para exportacion") }}
+  <div class="table-wrap"><table id="terrestre-missing-table"></table></div>
+</section>
+
+<section id="terrestre-preview" class="card hidden-block">
+  {{ section_header("Vista previa", "Salida operacional") }}
+  <div class="table-wrap"><table id="terrestre-preview-table"></table></div>
+</section>
 
 <script>
 const form = document.getElementById('terrestre-form');
@@ -56,7 +130,6 @@ modeSelect.addEventListener('change', () => {
   templateLink.href = `/templates/terrestre-ruta?mode=${mode}`;
 });
 
-
 function setProgress(value, etaSeconds) {
   const pct = Math.max(0, Math.min(100, value));
   progressBar.style.width = `${pct}%`;
@@ -66,13 +139,16 @@ function setProgress(value, etaSeconds) {
 
 function buildTable(tableElement, rows) {
   tableElement.innerHTML = '';
-  if (!rows || rows.length === 0) { tableElement.innerHTML = '<tr><td>Sin datos</td></tr>'; return; }
+  if (!rows || rows.length === 0) {
+    tableElement.innerHTML = '<tr><td>Sin datos</td></tr>';
+    return;
+  }
   const cols = Object.keys(rows[0]);
-  tableElement.innerHTML = `<thead><tr>${cols.map(c => `<th>${c}</th>`).join('')}</tr></thead>`;
+  tableElement.innerHTML = `<thead><tr>${cols.map((c) => `<th>${c}</th>`).join('')}</tr></thead>`;
   const body = document.createElement('tbody');
   rows.forEach((row) => {
     const tr = document.createElement('tr');
-    tr.innerHTML = cols.map(c => `<td>${row[c] ?? ''}</td>`).join('');
+    tr.innerHTML = cols.map((c) => `<td>${row[c] ?? ''}</td>`).join('');
     if (row.Estado && row.Estado !== 'OK') tr.classList.add('row-warning');
     body.appendChild(tr);
   });
@@ -81,10 +157,10 @@ function buildTable(tableElement, rows) {
 
 function renderSummary(summary) {
   const items = [
-    ['Total', summary.total], ['OK', summary.ok], ['Inválidos', summary.invalid],
-    ['Errores', summary.errors], ['Distancia total km', summary.distancia_total_km], ['Duración total min', summary.duracion_total_min]
+    ['Total', summary.total], ['OK', summary.ok], ['Invalidos', summary.invalid],
+    ['Errores', summary.errors], ['Distancia total km', summary.distancia_total_km], ['Duracion total min', summary.duracion_total_min]
   ];
-  summaryEl.innerHTML = items.map(([k,v]) => `<div class="summary-item"><strong>${k}</strong><span>${v ?? 0}</span></div>`).join('');
+  summaryEl.innerHTML = items.map(([k, v]) => `<div class="summary-item"><strong>${k}</strong><span>${v ?? 0}</span></div>`).join('');
 }
 
 ackBtn.addEventListener('click', () => {
@@ -95,12 +171,23 @@ ackBtn.addEventListener('click', () => {
 downloadBtn.addEventListener('click', async () => {
   if (!currentFile) return;
   downloadBtn.disabled = true;
-  const fd = new FormData(); fd.append('file', currentFile); fd.append('mode', modeSelect.value);
-  const res = await fetch('/api/terrestre-ruta', {method: 'POST', body: fd});
-  if (!res.ok) { alert('Error descargando resultado'); downloadBtn.disabled = false; return; }
+  const fd = new FormData();
+  fd.append('file', currentFile);
+  fd.append('mode', modeSelect.value);
+  const res = await fetch('/api/terrestre-ruta', { method: 'POST', body: fd });
+  if (!res.ok) {
+    alert('Error descargando resultado');
+    downloadBtn.disabled = false;
+    return;
+  }
   const blob = await res.blob();
   const url = window.URL.createObjectURL(blob);
-  const a = document.createElement('a'); a.href = url; a.download = 'terrestre_ruta_output.xlsx'; document.body.appendChild(a); a.click(); a.remove();
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'terrestre_ruta_output.xlsx';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
   window.URL.revokeObjectURL(url);
   downloadBtn.disabled = false;
 });
@@ -113,7 +200,9 @@ form.addEventListener('submit', async (e) => {
   statusEl.textContent = 'Validando...';
   downloadBtn.disabled = true;
   alertList.innerHTML = '';
-  const fd = new FormData(); fd.append('file', file); fd.append('mode', modeSelect.value);
+  const fd = new FormData();
+  fd.append('file', file);
+  fd.append('mode', modeSelect.value);
   const startedAt = Date.now();
   const etaTotal = Math.max(5, Math.min(60, file.size / 250000));
   setProgress(1, etaTotal);
@@ -151,7 +240,7 @@ form.addEventListener('submit', async (e) => {
       try {
         resolve(JSON.parse(xhr.responseText));
       } catch (_e) {
-        reject(new Error('Respuesta inválida del servidor'));
+        reject(new Error('Respuesta invalida del servidor'));
       }
     };
     xhr.onerror = () => {
@@ -164,7 +253,7 @@ form.addEventListener('submit', async (e) => {
 
   if (!payload) return;
   setProgress(100, 0);
-  statusEl.textContent = 'Validación completada';
+  statusEl.textContent = 'Validacion completada';
   renderSummary(payload.summary || {});
   buildTable(previewTable, payload.rows_preview || []);
   buildTable(missingTable, payload.missing_preview || []);
@@ -177,7 +266,7 @@ form.addEventListener('submit', async (e) => {
     alertText.textContent = `Se detectaron ${totalIssues} filas con observaciones antes de descargar.`;
     (payload.missing_preview || []).slice(0, 10).forEach((row, idx) => {
       const li = document.createElement('li');
-      li.textContent = `#${idx+1}: ${row.Estado || '-'}`;
+      li.textContent = `#${idx + 1}: ${row.Estado || '-'}`;
       alertList.appendChild(li);
     });
     downloadBtn.disabled = true;

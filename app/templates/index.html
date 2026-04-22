@@ -1,16 +1,38 @@
+{% set page_title = "Inicio" %}
 {% extends "base.html" %}
+{% from "_ui_macros.html" import page_header, section_header, tool_card %}
+
 {% block content %}
-<section class="hero">
-  <h1>Herramientas internas</h1>
-  <p>Version inicial para probar las herramientas de coordenadas, vuelos IATA, ruta terrestre y distancias maritimas.</p>
-</section>
-<section class="grid">
-  {% for tool in tools %}
+{{ page_header(
+  "Panel operativo",
+  "Calculadora de Distancias",
+  "Gestiona los cuatro modulos reales de la operacion desde un mismo sistema visual. Cada herramienta conserva su flujo actual de carga, validacion, procesamiento y descarga."
+) }}
+
+<section class="dashboard-highlights">
   <article class="card">
-    <h2>{{ tool.name }}</h2>
-    <p>{{ tool.description }}</p>
-    <a class="button" href="{{ tool.path }}">Abrir</a>
+    {{ section_header("Flujo de trabajo unificado", "Vista general") }}
+    <p>El sistema mantiene una misma secuencia para todos los modulos: plantilla, carga de archivo, validacion previa, alertas y exportacion final.</p>
+    <ul class="dashboard-list">
+      <li>Coordenadas para estandarizacion geografica y control de calidad de origenes.</li>
+      <li>Distancias aereas con soporte multi-modo para corporativo, upstream y downstream.</li>
+      <li>Terrestre por ruta para archivos con coordenadas o direccion, ciudad y pais.</li>
+      <li>Maritimo con catalogo consolidado, exactas y fallback proxy por mismo pais.</li>
+    </ul>
   </article>
-  {% endfor %}
+
+  <article class="card soft-card">
+    {{ section_header("Acciones disponibles", "Solo acciones conectadas") }}
+    <p>Desde esta portada solo se exponen rutas existentes del backend: entrar al modulo y descargar su plantilla correspondiente cuando aplica.</p>
+  </article>
+</section>
+
+<section class="card">
+  {{ section_header("Modulos disponibles", "Herramientas internas") }}
+  <div class="dashboard-grid">
+    {% for tool in tools %}
+    {{ tool_card(tool, loop.index) }}
+    {% endfor %}
+  </div>
 </section>
 {% endblock %}

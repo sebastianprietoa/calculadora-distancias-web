@@ -1,47 +1,104 @@
+{% set page_title = "Coordenadas" %}
 {% extends "base.html" %}
+{% from "_ui_macros.html" import page_header, section_header %}
+
 {% block content %}
-<h1>Coordenadas</h1>
-<p>Sube un archivo .xlsx o .csv con las columnas <strong>Ciudad</strong> y <strong>País</strong>.</p>
-<div class="actions">
-  <a class="button secondary" href="/templates/coordenadas">Descargar plantilla</a>
+{{ page_header(
+  "Modulo 1",
+  "Coordenadas",
+  "Sube un archivo .xlsx o .csv con columnas Ciudad y Pais para obtener latitud y longitud listas para uso operativo y trazabilidad."
+) }}
+
+<div class="workspace-grid">
+  <form id="coordenadas-form" class="card module-form-shell" enctype="multipart/form-data">
+    {{ section_header("Carga y validacion", "Preparacion del archivo", "Plantilla disponible", "success") }}
+    <div class="module-stage-grid">
+      <div class="file-upload-control">
+        <label class="file-upload-field" for="coordenadas-file">
+          <span class="file-upload-kicker">Archivo fuente</span>
+          <strong>Arrastra o selecciona la planilla a procesar</strong>
+          <span class="file-upload-copy">Formatos admitidos: XLSX y CSV.</span>
+          <span id="coordenadas-file-state" class="file-upload-name">Ningun archivo seleccionado</span>
+          <span class="file-upload-meta">La vista previa revisa hasta 200 filas y destaca registros con observaciones.</span>
+        </label>
+        <input
+          id="coordenadas-file"
+          class="visually-hidden"
+          type="file"
+          name="file"
+          accept=".xlsx,.csv"
+          required
+          data-file-target="coordenadas-file-state"
+          data-empty-label="Ningun archivo seleccionado"
+        >
+        <div class="inline-actions">
+          <a class="button secondary" href="/templates/coordenadas">Descargar plantilla</a>
+        </div>
+      </div>
+
+      <div class="module-note">
+        <h3>Reglas de entrada</h3>
+        <p>Usa nombres de ciudad y pais lo mas consistentes posible para mejorar precision y velocidad de validacion.</p>
+        <ul class="check-list">
+          <li>Columnas obligatorias: Ciudad y Pais.</li>
+          <li>CSV y XLSX son admitidos en el mismo flujo.</li>
+          <li>La descarga final se habilita despues de la validacion.</li>
+        </ul>
+        <div class="button-row">
+          <button class="button" type="submit">Validar archivo (sin descargar)</button>
+          <button id="download-result" class="button secondary" type="button" disabled>Descargar resultado XLSX</button>
+        </div>
+      </div>
+    </div>
+  </form>
+
+  <div class="stack-grid">
+    <section id="progress-card" class="card">
+      {{ section_header("Procesando archivo", "Seguimiento", "Progreso", "info") }}
+      <div class="progress-track">
+        <div id="progress-bar" class="progress-bar" style="width: 0%"></div>
+      </div>
+      <div class="status-copy">
+        <p id="progress-text">0% completado</p>
+        <p id="eta-text">Tiempo estimado restante: --</p>
+      </div>
+    </section>
+
+    <section class="card soft-card">
+      {{ section_header("Estado actual", "Antes de validar", "Esperando archivo", "neutral") }}
+      <p>La planilla se revisa primero en vista previa para identificar faltantes, errores o registros no encontrados antes de exportar.</p>
+    </section>
+
+    <section id="summary-card" class="card">
+      {{ section_header("Resumen de validacion", "Indicadores clave") }}
+      <div id="summary-grid" class="summary-grid">
+        <div class="summary-item">
+          <strong>Estado</strong>
+          <span>Esperando archivo</span>
+        </div>
+      </div>
+    </section>
+  </div>
 </div>
 
-<form id="coordenadas-form" class="upload-form" enctype="multipart/form-data">
-  <input id="coordenadas-file" type="file" name="file" accept=".xlsx,.csv" required>
-  <button class="button" type="submit">Validar archivo (sin descargar)</button>
-  <button id="download-result" class="button secondary" type="button" disabled>Descargar resultado XLSX</button>
-</form>
-
-<section id="progress-card" class="card">
-  <h3>Procesando archivo</h3>
-  <div class="progress-track">
-    <div id="progress-bar" class="progress-bar" style="width: 0%"></div>
-  </div>
-  <p id="progress-text">0% completado</p>
-  <p id="eta-text">Tiempo estimado restante: --</p>
-</section>
-
 <section id="alerts-card" class="card alert-card">
-  <h3>Alertas de validación antes de descargar</h3>
-  <p id="alerts-summary">Aún no hay alertas. Sube un archivo y valida antes de descargar.</p>
+  {{ section_header("Alertas antes de descargar", "Validacion preventiva", "Revision recomendada", "warning") }}
+  <p id="alerts-summary">Aun no hay alertas. Sube un archivo y valida antes de descargar.</p>
   <ul id="alerts-list"></ul>
-  <button id="acknowledge-alerts" class="button" type="button">Entendido, descargar de todos modos</button>
-</section>
-
-<section id="summary-card" class="card">
-  <h3>Resumen de validación</h3>
-  <div id="summary-grid" class="summary-grid"><div class="summary-item"><strong>Estado</strong><span>Esperando archivo</span></div></div>
+  <div class="button-row">
+    <button id="acknowledge-alerts" class="button secondary" type="button">Entendido, descargar de todos modos</button>
+  </div>
 </section>
 
 <section id="missing-card" class="card hidden-block">
-  <h3>Registros con observaciones (no encontrados o incompletos)</h3>
+  {{ section_header("Registros con observaciones", "Filas con faltantes o no encontrados") }}
   <div class="table-wrap">
     <table id="missing-table"></table>
   </div>
 </section>
 
 <section id="preview-card" class="card hidden-block">
-  <h3>Vista previa de resultados (primeras 200 filas)</h3>
+  {{ section_header("Vista previa de resultados", "Primeras 200 filas") }}
   <div class="table-wrap">
     <table id="preview-table"></table>
   </div>
@@ -50,13 +107,10 @@
 <script>
   const form = document.getElementById('coordenadas-form');
   const fileInput = document.getElementById('coordenadas-file');
-  const progressCard = document.getElementById('progress-card');
   const progressBar = document.getElementById('progress-bar');
   const progressText = document.getElementById('progress-text');
   const etaText = document.getElementById('eta-text');
-  const summaryCard = document.getElementById('summary-card');
   const summaryGrid = document.getElementById('summary-grid');
-  const alertsCard = document.getElementById('alerts-card');
   const alertsSummary = document.getElementById('alerts-summary');
   const alertsList = document.getElementById('alerts-list');
   const acknowledgeAlertsBtn = document.getElementById('acknowledge-alerts');
@@ -92,7 +146,7 @@
 
     const columns = Object.keys(rows[0]);
     const thead = document.createElement('thead');
-    thead.innerHTML = `<tr>${columns.map(col => `<th>${col}</th>`).join('')}</tr>`;
+    thead.innerHTML = `<tr>${columns.map((col) => `<th>${col}</th>`).join('')}</tr>`;
     tableElement.appendChild(thead);
 
     const tbody = document.createElement('tbody');
@@ -114,7 +168,7 @@
       ['No encontrado', summary.not_found],
       ['Faltan datos', summary.missing],
       ['Errores', summary.errors],
-      ['Precisión promedio', `${summary.precision_pct}%`],
+      ['Precision promedio', `${summary.precision_pct}%`],
     ];
 
     summaryGrid.innerHTML = cards.map(([label, value]) => (
@@ -138,8 +192,9 @@
 
     problematicRows.slice(0, 10).forEach((row, idx) => {
       const item = document.createElement('li');
-      const consulta = row.Consulta || `${row.Ciudad || '-'}, ${row['País'] || '-'}`;
-      item.textContent = `#${idx + 1}: ${consulta} → ${row.Estado || 'Sin estado'}`;
+      const countryValue = row.Pais || row['Pa\u00eds'] || row['Pa\u00c3\u00ads'] || '-';
+      const consulta = row.Consulta || `${row.Ciudad || '-'}, ${countryValue}`;
+      item.textContent = `#${idx + 1}: ${consulta} -> ${row.Estado || 'Sin estado'}`;
       alertsList.appendChild(item);
     });
 
@@ -239,7 +294,7 @@
       try {
         payload = JSON.parse(xhr.responseText);
       } catch (err) {
-        alert('Respuesta inválida del servidor');
+        alert('Respuesta invalida del servidor');
         return;
       }
 

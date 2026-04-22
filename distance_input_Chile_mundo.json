@@ -30553,5 +30553,1705 @@
     "distance_nm": 5188.0458663683075,
     "status": "ok",
     "error": null
+  },
+  "GYGEO__PTSMT__IMO_9706906": {
+    "distance_nm": 2869.46572527039,
+    "status": "ok",
+    "error": null
+  },
+  "GYGEO__PTFAO__IMO_9706906": {
+    "distance_nm": 3548.5251890124064,
+    "status": "ok",
+    "error": null
+  },
+  "GYGEO__ROCAF__IMO_9706906": {
+    "distance_nm": 5221.574611841275,
+    "status": "ok",
+    "error": null
+  },
+  "GYGEO__ROMAG__IMO_9706906": {
+    "distance_nm": 5583.482300842106,
+    "status": "ok",
+    "error": null
+  },
+  "GYGEO__RUTAM__IMO_9706906": {
+    "distance_nm": 5833.861471490633,
+    "status": "ok",
+    "error": null
+  },
+  "GYGEO__RUMOW__IMO_9706906": {
+    "distance_nm": null,
+    "status": "error",
+    "error": "HTTP 500: {\"errorCode\":500,\"message\":\"An unexpected error has occurred\",\"details\":[],\"time\":\"2026-04-22T01:21:07.504429021Z\"}"
+  },
+  "GYGEO__SMAQ8__IMO_9706906": {
+    "distance_nm": null,
+    "status": "error",
+    "error": "HTTP 500: {\"errorCode\":500,\"message\":\"An unexpected error has occurred\",\"details\":[],\"time\":\"2026-04-22T01:21:14.809058317Z\"}"
+  },
+  "GYGEO__RSXXX__IMO_9706906": {
+    "distance_nm": null,
+    "status": "error",
+    "error": "HTTP 500: {\"errorCode\":500,\"message\":\"An unexpected error has occurred\",\"details\":[],\"time\":\"2026-04-22T01:21:22.12957362Z\"}"
+  },
+  "GYGEO__RSAPT__IMO_9706906": {
+    "distance_nm": null,
+    "status": "error",
+    "error": "HTTP 500: {\"errorCode\":500,\"message\":\"An unexpected error has occurred\",\"details\":[],\"time\":\"2026-04-22T01:21:29.456032602Z\"}"
+  },
+  "GYGEO__SKBAB__IMO_9706906": {
+    "distance_nm": null,
+    "status": "error",
+    "error": "HTTP 500: {\"errorCode\":500,\"message\":\"An unexpected error has occurred\",\"details\":[],\"time\":\"2026-04-22T01:21:36.837963297Z\"}"
+  },
+  "GYGEO__SKKNP__IMO_9706906": {
+    "distance_nm": null,
+    "status": "error",
+    "error": "HTTP 500: {\"errorCode\":500,\"message\":\"An unexpected error has occurred\",\"details\":[],\"time\":\"2026-04-22T01:21:44.602206468Z\"}"
+  },
+  "GYGEO__SIPOW__IMO_9706906": {
+    "distance_nm": null,
+    "status": "error",
+    "error": "HTTP 500: {\"errorCode\":500,\"message\":\"An unexpected error has occurred\",\"details\":[],\"time\":\"2026-04-22T01:21:52.354008686Z\"}"
+  },
+  "GYGEO__SIJCE__IMO_9706906": {
+    "distance_nm": 5311.873124291582,
+    "status": "ok",
+    "error": null
+  },
+  "GYGEO__ESCAR__IMO_9706906": {
+    "distance_nm": 3853.9322351365668,
+    "status": "ok",
+    "error": null
+  },
+  "GYGEO__ESPTN__IMO_9706906": {
+    "distance_nm": 3733.0918054395725,
+    "status": "ok",
+    "error": null
+  },
+  "GYGEO__SJBAR__IMO_9706906": {
+    "distance_nm": 5262.457355965852,
+    "status": "ok",
+    "error": null
+  },
+  "GYGEO__SJSVE__IMO_9706906": {
+    "distance_nm": 5268.518097316124,
+    "status": "ok",
+    "error": null
+  },
+  "GYGEO__SEGOT__IMO_9706906": {
+    "distance_nm": 4784.124197286329,
+    "status": "ok",
+    "error": null
+  },
+  "GYGEO__SEHAD__IMO_9706906": {
+    "distance_nm": 4845.717320120759,
+    "status": "ok",
+    "error": null
+  },
+  "GYGEO__CHXXX__IMO_9706906": {
+    "distance_nm": null,
+    "status": "error",
+    "error": "HTTP 500: {\"errorCode\":500,\"message\":\"An unexpected error has occurred\",\"details\":[],\"time\":\"2026-04-22T01:22:49.19099988Z\"}"
+  },
+  "GYGEO__CHGTT__IMO_9706906": {
+    "distance_nm": 4750.822738652394,
+    "status": "ok",
+    "error": null
+  },
+  "GYGEO__UAODS__IMO_9706906": {
+    "distance_nm": 5760.960761382352,
+    "status": "ok",
+    "error": null
+  },
+  "GYGEO__UAILK__IMO_9706906": {
+    "distance_nm": 5752.5023125692815,
+    "status": "ok",
+    "error": null
+  },
+  "GYGEO__GBBOH__IMO_9706906": {
+    "distance_nm": 4101.133574906639,
+    "status": "ok",
+    "error": null
+  },
+  "GYGEO__GBLBA__IMO_9706906": {
+    "distance_nm": 4457.293104430508,
+    "status": "ok",
+    "error": null
+  },
+  "GYGEO__AXMHQ__IMO_9706906": {
+    "distance_nm": 5326.974667487137,
+    "status": "ok",
+    "error": null
+  },
+  "HNPCA__ALROM__IMO_9706906": {
+    "distance_nm": 5966.648093617499,
+    "status": "ok",
+    "error": null
+  },
+  "HNPCA__ALSAR__IMO_9706906": {
+    "distance_nm": 5913.82427289016,
+    "status": "ok",
+    "error": null
+  },
+  "HNPCA__ATXXX__IMO_9706906": {
+    "distance_nm": null,
+    "status": "error",
+    "error": "HTTP 500: {\"errorCode\":500,\"message\":\"An unexpected error has occurred\",\"details\":[],\"time\":\"2026-04-22T01:24:13.564276267Z\"}"
+  },
+  "HNPCA__ATKTT__IMO_9706906": {
+    "distance_nm": null,
+    "status": "error",
+    "error": "HTTP 500: {\"errorCode\":500,\"message\":\"not trade region found for : ATKTT\",\"details\":null,\"time\":\"2026-04-22T01:24:42.422975037Z\"}"
+  },
+  "HNPCA__BYKYC__IMO_9706906": {
+    "distance_nm": null,
+    "status": "error",
+    "error": "HTTP 500: {\"errorCode\":500,\"message\":\"not trade region found for : BYKYC\",\"details\":null,\"time\":\"2026-04-22T01:25:10.910413407Z\"}"
+  },
+  "HNPCA__BYSNM__IMO_9706906": {
+    "distance_nm": 7380.362285146479,
+    "status": "ok",
+    "error": null
+  },
+  "HNPCA__BEANR__IMO_9706906": {
+    "distance_nm": 4902.337416550197,
+    "status": "ok",
+    "error": null
+  },
+  "HNPCA__BEBRU__IMO_9706906": {
+    "distance_nm": 4975.158188316012,
+    "status": "ok",
+    "error": null
+  },
+  "HNPCA__BAMAG__IMO_9706906": {
+    "distance_nm": 6324.523684347639,
+    "status": "ok",
+    "error": null
+  },
+  "HNPCA__BAZNK__IMO_9706906": {
+    "distance_nm": 6339.098998106183,
+    "status": "ok",
+    "error": null
+  },
+  "HNPCA__BGRDU__IMO_9706906": {
+    "distance_nm": 6665.333398302367,
+    "status": "ok",
+    "error": null
+  },
+  "HNPCA__BGBOJ__IMO_9706906": {
+    "distance_nm": 6546.107841273182,
+    "status": "ok",
+    "error": null
+  },
+  "HNPCA__HRGNA__IMO_9706906": {
+    "distance_nm": 6150.304755059695,
+    "status": "ok",
+    "error": null
+  },
+  "HNPCA__HRVRA__IMO_9706906": {
+    "distance_nm": 6101.399720999042,
+    "status": "ok",
+    "error": null
+  },
+  "HNPCA__CZDCB__IMO_9706906": {
+    "distance_nm": 5560.894597694032,
+    "status": "ok",
+    "error": null
+  },
+  "HNPCA__CZULN__IMO_9706906": {
+    "distance_nm": 5569.922771063962,
+    "status": "ok",
+    "error": null
+  },
+  "HNPCA__DKROD__IMO_9706906": {
+    "distance_nm": 5269.749232649171,
+    "status": "ok",
+    "error": null
+  },
+  "HNPCA__DKKLP__IMO_9706906": {
+    "distance_nm": 5048.830499698597,
+    "status": "ok",
+    "error": null
+  },
+  "HNPCA__EESLM__IMO_9706906": {
+    "distance_nm": 5832.176307692324,
+    "status": "ok",
+    "error": null
+  },
+  "HNPCA__EEKLE__IMO_9706906": {
+    "distance_nm": 5680.864875584019,
+    "status": "ok",
+    "error": null
+  },
+  "HNPCA__FOHYV__IMO_9706906": {
+    "distance_nm": 4633.989201092662,
+    "status": "ok",
+    "error": null
+  },
+  "HNPCA__FOKOL__IMO_9706906": {
+    "distance_nm": 4642.001434428944,
+    "status": "ok",
+    "error": null
+  },
+  "HNPCA__FIJOE__IMO_9706906": {
+    "distance_nm": 5996.519372459011,
+    "status": "ok",
+    "error": null
+  },
+  "HNPCA__FIJYV__IMO_9706906": {
+    "distance_nm": 5896.314273262661,
+    "status": "ok",
+    "error": null
+  },
+  "HNPCA__FR8GT__IMO_9706906": {
+    "distance_nm": null,
+    "status": "error",
+    "error": "HTTP 500: {\"errorCode\":500,\"message\":\"An unexpected error has occurred\",\"details\":[],\"time\":\"2026-04-22T01:28:27.046970022Z\"}"
+  },
+  "HNPCA__FR9AV__IMO_9706906": {
+    "distance_nm": null,
+    "status": "error",
+    "error": "HTTP 500: {\"errorCode\":500,\"message\":\"An unexpected error has occurred\",\"details\":[],\"time\":\"2026-04-22T01:28:34.379617477Z\"}"
+  },
+  "HNPCA__DEAAH__IMO_9706906": {
+    "distance_nm": 5093.682211597333,
+    "status": "ok",
+    "error": null
+  },
+  "HNPCA__DEMAO__IMO_9706906": {
+    "distance_nm": 5161.621131122592,
+    "status": "ok",
+    "error": null
+  },
+  "HNPCA__GIGIB__IMO_9706906": {
+    "distance_nm": 4639.322768054931,
+    "status": "ok",
+    "error": null
+  },
+  "HNPCA__GRAIO__IMO_9706906": {
+    "distance_nm": 6114.84169891521,
+    "status": "ok",
+    "error": null
+  },
+  "HNPCA__GRATS__IMO_9706906": {
+    "distance_nm": 6168.215797422002,
+    "status": "ok",
+    "error": null
+  },
+  "HNPCA__GGACI__IMO_9706906": {
+    "distance_nm": 4693.658161670861,
+    "status": "ok",
+    "error": null
+  },
+  "HNPCA__GGGCI__IMO_9706906": {
+    "distance_nm": 4678.050748847423,
+    "status": "ok",
+    "error": null
+  },
+  "HNPCA__HUBUD__IMO_9706906": {
+    "distance_nm": null,
+    "status": "error",
+    "error": "HTTP 500: {\"errorCode\":500,\"message\":\"not trade region found for : HUBUD\",\"details\":null,\"time\":\"2026-04-22T01:29:55.811189378Z\"}"
+  },
+  "HNPCA__HUDEB__IMO_9706906": {
+    "distance_nm": null,
+    "status": "error",
+    "error": "HTTP 500: {\"errorCode\":500,\"message\":\"An unexpected error has occurred\",\"details\":[],\"time\":\"2026-04-22T01:30:04.89112841Z\"}"
+  },
+  "HNPCA__ISBOL__IMO_9706906": {
+    "distance_nm": 4274.370149985105,
+    "status": "ok",
+    "error": null
+  },
+  "HNPCA__ISBUD__IMO_9706906": {
+    "distance_nm": 4292.583320202225,
+    "status": "ok",
+    "error": null
+  },
+  "HNPCA__IEDFY__IMO_9706906": {
+    "distance_nm": 4671.352218174128,
+    "status": "ok",
+    "error": null
+  },
+  "HNPCA__IEEKY__IMO_9706906": {
+    "distance_nm": 4591.815183136105,
+    "status": "ok",
+    "error": null
+  },
+  "HNPCA__IMDGS__IMO_9706906": {
+    "distance_nm": 4715.628743202595,
+    "status": "ok",
+    "error": null
+  },
+  "HNPCA__IMPEL__IMO_9706906": {
+    "distance_nm": 4685.068480204381,
+    "status": "ok",
+    "error": null
+  },
+  "HNPCA__ITACT__IMO_9706906": {
+    "distance_nm": 5687.5186584980165,
+    "status": "ok",
+    "error": null
+  },
+  "HNPCA__ITBCB__IMO_9706906": {
+    "distance_nm": 5650.035851909811,
+    "status": "ok",
+    "error": null
+  },
+  "HNPCA__JESTH__IMO_9706906": {
+    "distance_nm": 4701.9723113550335,
+    "status": "ok",
+    "error": null
+  },
+  "HNPCA__JESAB__IMO_9706906": {
+    "distance_nm": 4697.072137625701,
+    "status": "ok",
+    "error": null
+  },
+  "HNPCA__LVMRX__IMO_9706906": {
+    "distance_nm": 5652.429193958255,
+    "status": "ok",
+    "error": null
+  },
+  "HNPCA__LVLPX__IMO_9706906": {
+    "distance_nm": 5539.2750103864255,
+    "status": "ok",
+    "error": null
+  },
+  "HNPCA__LTMLM__IMO_9706906": {
+    "distance_nm": 5541.152400657794,
+    "status": "ok",
+    "error": null
+  },
+  "HNPCA__LTMOM__IMO_9706906": {
+    "distance_nm": 5541.469570437801,
+    "status": "ok",
+    "error": null
+  },
+  "HNPCA__LULUX__IMO_9706906": {
+    "distance_nm": null,
+    "status": "error",
+    "error": "HTTP 500: {\"errorCode\":500,\"message\":\"An unexpected error has occurred\",\"details\":[],\"time\":\"2026-04-22T01:32:06.748173236Z\"}"
+  },
+  "HNPCA__LUXXX__IMO_9706906": {
+    "distance_nm": null,
+    "status": "error",
+    "error": "HTTP 500: {\"errorCode\":500,\"message\":\"An unexpected error has occurred\",\"details\":[],\"time\":\"2026-04-22T01:32:15.888215024Z\"}"
+  },
+  "HNPCA__MTFLO__IMO_9706906": {
+    "distance_nm": 5615.907474162748,
+    "status": "ok",
+    "error": null
+  },
+  "HNPCA__MTBAL__IMO_9706906": {
+    "distance_nm": 5613.94452222943,
+    "status": "ok",
+    "error": null
+  },
+  "HNPCA__MDXXX__IMO_9706906": {
+    "distance_nm": null,
+    "status": "error",
+    "error": "HTTP 500: {\"errorCode\":500,\"message\":\"An unexpected error has occurred\",\"details\":[],\"time\":\"2026-04-22T01:32:39.270243398Z\"}"
+  },
+  "HNPCA__MDGIU__IMO_9706906": {
+    "distance_nm": 6710.693481680593,
+    "status": "ok",
+    "error": null
+  },
+  "HNPCA__MCMCM__IMO_9706906": {
+    "distance_nm": 5399.333431251345,
+    "status": "ok",
+    "error": null
+  },
+  "HNPCA__MCMON__IMO_9706906": {
+    "distance_nm": 5408.055022758956,
+    "status": "ok",
+    "error": null
+  },
+  "HNPCA__MEHNO__IMO_9706906": {
+    "distance_nm": 6006.138048714721,
+    "status": "ok",
+    "error": null
+  },
+  "HNPCA__MEBAR__IMO_9706906": {
+    "distance_nm": 5988.5436850784345,
+    "status": "ok",
+    "error": null
+  },
+  "HNPCA__NLAMS__IMO_9706906": {
+    "distance_nm": 4961.951808342858,
+    "status": "ok",
+    "error": null
+  },
+  "HNPCA__NLEIN__IMO_9706906": {
+    "distance_nm": 5061.183554530221,
+    "status": "ok",
+    "error": null
+  },
+  "HNPCA__MKDKJ__IMO_9706906": {
+    "distance_nm": 6376.296759943394,
+    "status": "ok",
+    "error": null
+  },
+  "HNPCA__MKSNI__IMO_9706906": {
+    "distance_nm": 6406.32537362517,
+    "status": "ok",
+    "error": null
+  },
+  "HNPCA__NOBGO__IMO_9706906": {
+    "distance_nm": 4915.649702899713,
+    "status": "ok",
+    "error": null
+  },
+  "HNPCA__NOBOO__IMO_9706906": {
+    "distance_nm": 5177.555864027069,
+    "status": "ok",
+    "error": null
+  },
+  "HNPCA__PLBEK__IMO_9706906": {
+    "distance_nm": 5520.746051750786,
+    "status": "ok",
+    "error": null
+  },
+  "HNPCA__PLOSD__IMO_9706906": {
+    "distance_nm": 5517.185079315845,
+    "status": "ok",
+    "error": null
+  },
+  "HNPCA__PTSMT__IMO_9706906": {
+    "distance_nm": 3699.498051042323,
+    "status": "ok",
+    "error": null
+  },
+  "HNPCA__PTFAO__IMO_9706906": {
+    "distance_nm": 4531.462623066229,
+    "status": "ok",
+    "error": null
+  },
+  "HNPCA__ROCAF__IMO_9706906": {
+    "distance_nm": 6234.924063860806,
+    "status": "ok",
+    "error": null
+  },
+  "HNPCA__ROMAG__IMO_9706906": {
+    "distance_nm": 6596.831752861637,
+    "status": "ok",
+    "error": null
+  },
+  "HNPCA__RUTAM__IMO_9706906": {
+    "distance_nm": 6847.210923510164,
+    "status": "ok",
+    "error": null
+  },
+  "HNPCA__RUMOW__IMO_9706906": {
+    "distance_nm": 6478.175576683372,
+    "status": "ok",
+    "error": null
+  },
+  "HNPCA__SMAQ8__IMO_9706906": {
+    "distance_nm": null,
+    "status": "error",
+    "error": "HTTP 500: {\"errorCode\":500,\"message\":\"An unexpected error has occurred\",\"details\":[],\"time\":\"2026-04-22T01:35:24.374147239Z\"}"
+  },
+  "HNPCA__RSXXX__IMO_9706906": {
+    "distance_nm": null,
+    "status": "error",
+    "error": "HTTP 500: {\"errorCode\":500,\"message\":\"An unexpected error has occurred\",\"details\":[],\"time\":\"2026-04-22T01:35:32.616299091Z\"}"
+  },
+  "HNPCA__RSAPT__IMO_9706906": {
+    "distance_nm": null,
+    "status": "error",
+    "error": "HTTP 500: {\"errorCode\":500,\"message\":\"not trade region found for : RSAPT\",\"details\":null,\"time\":\"2026-04-22T01:36:00.721566981Z\"}"
+  },
+  "HNPCA__SKBAB__IMO_9706906": {
+    "distance_nm": null,
+    "status": "error",
+    "error": "HTTP 500: {\"errorCode\":500,\"message\":\"An unexpected error has occurred\",\"details\":[],\"time\":\"2026-04-22T01:36:11.090324835Z\"}"
+  },
+  "HNPCA__SKKNP__IMO_9706906": {
+    "distance_nm": null,
+    "status": "error",
+    "error": "HTTP 500: {\"errorCode\":500,\"message\":\"An unexpected error has occurred\",\"details\":[],\"time\":\"2026-04-22T01:36:22.300502551Z\"}"
+  },
+  "HNPCA__SIPOW__IMO_9706906": {
+    "distance_nm": null,
+    "status": "error",
+    "error": "HTTP 500: {\"errorCode\":500,\"message\":\"An unexpected error has occurred\",\"details\":[],\"time\":\"2026-04-22T01:36:30.148028756Z\"}"
+  },
+  "HNPCA__SIJCE__IMO_9706906": {
+    "distance_nm": 6325.222576311113,
+    "status": "ok",
+    "error": null
+  },
+  "HNPCA__ESCAR__IMO_9706906": {
+    "distance_nm": 4867.2062324820945,
+    "status": "ok",
+    "error": null
+  },
+  "HNPCA__ESPTN__IMO_9706906": {
+    "distance_nm": 4630.469772191791,
+    "status": "ok",
+    "error": null
+  },
+  "HNPCA__SJBAR__IMO_9706906": {
+    "distance_nm": 5316.100156370217,
+    "status": "ok",
+    "error": null
+  },
+  "HNPCA__SJSVE__IMO_9706906": {
+    "distance_nm": 5322.160897720488,
+    "status": "ok",
+    "error": null
+  },
+  "HNPCA__SEGOT__IMO_9706906": {
+    "distance_nm": 5112.387295014917,
+    "status": "ok",
+    "error": null
+  },
+  "HNPCA__SEHAD__IMO_9706906": {
+    "distance_nm": 5174.856533068296,
+    "status": "ok",
+    "error": null
+  },
+  "HNPCA__CHXXX__IMO_9706906": {
+    "distance_nm": null,
+    "status": "error",
+    "error": "HTTP 500: {\"errorCode\":500,\"message\":\"An unexpected error has occurred\",\"details\":[],\"time\":\"2026-04-22T01:37:27.612505178Z\"}"
+  },
+  "HNPCA__CHGTT__IMO_9706906": {
+    "distance_nm": 5369.003022257073,
+    "status": "ok",
+    "error": null
+  },
+  "HNPCA__UAODS__IMO_9706906": {
+    "distance_nm": 6774.310213401883,
+    "status": "ok",
+    "error": null
+  },
+  "HNPCA__UAILK__IMO_9706906": {
+    "distance_nm": 6765.851764588812,
+    "status": "ok",
+    "error": null
+  },
+  "HNPCA__GBBOH__IMO_9706906": {
+    "distance_nm": 4709.324827409908,
+    "status": "ok",
+    "error": null
+  },
+  "HNPCA__GBLBA__IMO_9706906": {
+    "distance_nm": 5028.248317283553,
+    "status": "ok",
+    "error": null
+  },
+  "HNPCA__AXMHQ__IMO_9706906": {
+    "distance_nm": 5656.113880434674,
+    "status": "ok",
+    "error": null
+  },
+  "MXLZC__ALROM__IMO_9706906": {
+    "distance_nm": 7620.500238605365,
+    "status": "ok",
+    "error": null
+  },
+  "MXLZC__ALSAR__IMO_9706906": {
+    "distance_nm": 7567.676417878025,
+    "status": "ok",
+    "error": null
+  },
+  "MXLZC__ATXXX__IMO_9706906": {
+    "distance_nm": null,
+    "status": "error",
+    "error": "HTTP 500: {\"errorCode\":500,\"message\":\"An unexpected error has occurred\",\"details\":[],\"time\":\"2026-04-22T01:38:49.254778751Z\"}"
+  },
+  "MXLZC__ATKTT__IMO_9706906": {
+    "distance_nm": null,
+    "status": "error",
+    "error": "HTTP 500: {\"errorCode\":500,\"message\":\"not trade region found for : ATKTT\",\"details\":null,\"time\":\"2026-04-22T01:39:22.912845375Z\"}"
+  },
+  "MXLZC__BYKYC__IMO_9706906": {
+    "distance_nm": null,
+    "status": "error",
+    "error": "HTTP 500: {\"errorCode\":500,\"message\":\"not trade region found for : BYKYC\",\"details\":null,\"time\":\"2026-04-22T01:39:52.504349342Z\"}"
+  },
+  "MXLZC__BYSNM__IMO_9706906": {
+    "distance_nm": 9034.214430134343,
+    "status": "ok",
+    "error": null
+  },
+  "MXLZC__BEANR__IMO_9706906": {
+    "distance_nm": 6692.697570744442,
+    "status": "ok",
+    "error": null
+  },
+  "MXLZC__BEBRU__IMO_9706906": {
+    "distance_nm": 6765.417457567424,
+    "status": "ok",
+    "error": null
+  },
+  "MXLZC__BAMAG__IMO_9706906": {
+    "distance_nm": 7978.375829335505,
+    "status": "ok",
+    "error": null
+  },
+  "MXLZC__BAZNK__IMO_9706906": {
+    "distance_nm": 7992.951143094049,
+    "status": "ok",
+    "error": null
+  },
+  "MXLZC__BGRDU__IMO_9706906": {
+    "distance_nm": 8319.18554329023,
+    "status": "ok",
+    "error": null
+  },
+  "MXLZC__BGBOJ__IMO_9706906": {
+    "distance_nm": 8199.959986261047,
+    "status": "ok",
+    "error": null
+  },
+  "MXLZC__HRGNA__IMO_9706906": {
+    "distance_nm": 7804.15690004756,
+    "status": "ok",
+    "error": null
+  },
+  "MXLZC__HRVRA__IMO_9706906": {
+    "distance_nm": 7755.251865986907,
+    "status": "ok",
+    "error": null
+  },
+  "MXLZC__CZDCB__IMO_9706906": {
+    "distance_nm": 7504.8037060274155,
+    "status": "ok",
+    "error": null
+  },
+  "MXLZC__CZULN__IMO_9706906": {
+    "distance_nm": 7513.831879397345,
+    "status": "ok",
+    "error": null
+  },
+  "MXLZC__DKROD__IMO_9706906": {
+    "distance_nm": 7213.658340982554,
+    "status": "ok",
+    "error": null
+  },
+  "MXLZC__DKKLP__IMO_9706906": {
+    "distance_nm": 6992.73960803198,
+    "status": "ok",
+    "error": null
+  },
+  "MXLZC__EESLM__IMO_9706906": {
+    "distance_nm": 7776.085416025708,
+    "status": "ok",
+    "error": null
+  },
+  "MXLZC__EEKLE__IMO_9706906": {
+    "distance_nm": 7624.773983917402,
+    "status": "ok",
+    "error": null
+  },
+  "MXLZC__FOHYV__IMO_9706906": {
+    "distance_nm": 6584.229107396621,
+    "status": "ok",
+    "error": null
+  },
+  "MXLZC__FOKOL__IMO_9706906": {
+    "distance_nm": 6592.241340732902,
+    "status": "ok",
+    "error": null
+  },
+  "MXLZC__FIJOE__IMO_9706906": {
+    "distance_nm": 7940.428480792394,
+    "status": "ok",
+    "error": null
+  },
+  "MXLZC__FIJYV__IMO_9706906": {
+    "distance_nm": 7840.223381596045,
+    "status": "ok",
+    "error": null
+  },
+  "MXLZC__FR8GT__IMO_9706906": {
+    "distance_nm": null,
+    "status": "error",
+    "error": "HTTP 500: {\"errorCode\":500,\"message\":\"An unexpected error has occurred\",\"details\":[],\"time\":\"2026-04-22T01:42:50.302613693Z\"}"
+  },
+  "MXLZC__FR9AV__IMO_9706906": {
+    "distance_nm": null,
+    "status": "error",
+    "error": "HTTP 500: {\"errorCode\":500,\"message\":\"An unexpected error has occurred\",\"details\":[],\"time\":\"2026-04-22T01:42:57.596326572Z\"}"
+  },
+  "MXLZC__DEAAH__IMO_9706906": {
+    "distance_nm": 6883.941480848745,
+    "status": "ok",
+    "error": null
+  },
+  "MXLZC__DEMAO__IMO_9706906": {
+    "distance_nm": 7105.530239455975,
+    "status": "ok",
+    "error": null
+  },
+  "MXLZC__GIGIB__IMO_9706906": {
+    "distance_nm": 6293.174913042796,
+    "status": "ok",
+    "error": null
+  },
+  "MXLZC__GRAIO__IMO_9706906": {
+    "distance_nm": 7768.6938439030755,
+    "status": "ok",
+    "error": null
+  },
+  "MXLZC__GRATS__IMO_9706906": {
+    "distance_nm": 7822.067942409867,
+    "status": "ok",
+    "error": null
+  },
+  "MXLZC__GGACI__IMO_9706906": {
+    "distance_nm": 6482.619973386585,
+    "status": "ok",
+    "error": null
+  },
+  "MXLZC__GGGCI__IMO_9706906": {
+    "distance_nm": 6464.44986211488,
+    "status": "ok",
+    "error": null
+  },
+  "MXLZC__HUBUD__IMO_9706906": {
+    "distance_nm": null,
+    "status": "error",
+    "error": "HTTP 500: {\"errorCode\":500,\"message\":\"not trade region found for : HUBUD\",\"details\":null,\"time\":\"2026-04-22T01:44:19.308927893Z\"}"
+  },
+  "MXLZC__HUDEB__IMO_9706906": {
+    "distance_nm": null,
+    "status": "error",
+    "error": "HTTP 500: {\"errorCode\":500,\"message\":\"An unexpected error has occurred\",\"details\":[],\"time\":\"2026-04-22T01:44:28.886489214Z\"}"
+  },
+  "MXLZC__ISBOL__IMO_9706906": {
+    "distance_nm": 6245.3297069791115,
+    "status": "ok",
+    "error": null
+  },
+  "MXLZC__ISBUD__IMO_9706906": {
+    "distance_nm": 6263.5428771962315,
+    "status": "ok",
+    "error": null
+  },
+  "MXLZC__IEDFY__IMO_9706906": {
+    "distance_nm": 6554.0662002641175,
+    "status": "ok",
+    "error": null
+  },
+  "MXLZC__IEEKY__IMO_9706906": {
+    "distance_nm": 6454.951729573531,
+    "status": "ok",
+    "error": null
+  },
+  "MXLZC__IMDGS__IMO_9706906": {
+    "distance_nm": 6561.60819427257,
+    "status": "ok",
+    "error": null
+  },
+  "MXLZC__IMPEL__IMO_9706906": {
+    "distance_nm": 6531.047931274355,
+    "status": "ok",
+    "error": null
+  },
+  "MXLZC__ITACT__IMO_9706906": {
+    "distance_nm": 7341.370803485882,
+    "status": "ok",
+    "error": null
+  },
+  "MXLZC__ITBCB__IMO_9706906": {
+    "distance_nm": 7303.887996897676,
+    "status": "ok",
+    "error": null
+  },
+  "MXLZC__JESTH__IMO_9706906": {
+    "distance_nm": 6487.121278393798,
+    "status": "ok",
+    "error": null
+  },
+  "MXLZC__JESAB__IMO_9706906": {
+    "distance_nm": 6482.221104664465,
+    "status": "ok",
+    "error": null
+  },
+  "MXLZC__LVMRX__IMO_9706906": {
+    "distance_nm": 7596.338302291639,
+    "status": "ok",
+    "error": null
+  },
+  "MXLZC__LVLPX__IMO_9706906": {
+    "distance_nm": 7483.184118719809,
+    "status": "ok",
+    "error": null
+  },
+  "MXLZC__LTMLM__IMO_9706906": {
+    "distance_nm": 7485.061508991177,
+    "status": "ok",
+    "error": null
+  },
+  "MXLZC__LTMOM__IMO_9706906": {
+    "distance_nm": 7485.378678771184,
+    "status": "ok",
+    "error": null
+  },
+  "MXLZC__LULUX__IMO_9706906": {
+    "distance_nm": null,
+    "status": "error",
+    "error": "HTTP 500: {\"errorCode\":500,\"message\":\"An unexpected error has occurred\",\"details\":[],\"time\":\"2026-04-22T01:46:26.146211064Z\"}"
+  },
+  "MXLZC__LUXXX__IMO_9706906": {
+    "distance_nm": null,
+    "status": "error",
+    "error": "HTTP 500: {\"errorCode\":500,\"message\":\"An unexpected error has occurred\",\"details\":[],\"time\":\"2026-04-22T01:46:38.692966873Z\"}"
+  },
+  "MXLZC__MTFLO__IMO_9706906": {
+    "distance_nm": 7269.759619150614,
+    "status": "ok",
+    "error": null
+  },
+  "MXLZC__MTBAL__IMO_9706906": {
+    "distance_nm": 7267.796667217295,
+    "status": "ok",
+    "error": null
+  },
+  "MXLZC__MDXXX__IMO_9706906": {
+    "distance_nm": null,
+    "status": "error",
+    "error": "HTTP 500: {\"errorCode\":500,\"message\":\"An unexpected error has occurred\",\"details\":[],\"time\":\"2026-04-22T01:47:06.400756552Z\"}"
+  },
+  "MXLZC__MDGIU__IMO_9706906": {
+    "distance_nm": 8364.54562666846,
+    "status": "ok",
+    "error": null
+  },
+  "MXLZC__MCMCM__IMO_9706906": {
+    "distance_nm": 7053.185576239211,
+    "status": "ok",
+    "error": null
+  },
+  "MXLZC__MCMON__IMO_9706906": {
+    "distance_nm": 7061.907167746821,
+    "status": "ok",
+    "error": null
+  },
+  "MXLZC__MEHNO__IMO_9706906": {
+    "distance_nm": 7659.990193702586,
+    "status": "ok",
+    "error": null
+  },
+  "MXLZC__MEBAR__IMO_9706906": {
+    "distance_nm": 7642.3958300663,
+    "status": "ok",
+    "error": null
+  },
+  "MXLZC__NLAMS__IMO_9706906": {
+    "distance_nm": 6752.311962537103,
+    "status": "ok",
+    "error": null
+  },
+  "MXLZC__NLEIN__IMO_9706906": {
+    "distance_nm": 6851.442823781634,
+    "status": "ok",
+    "error": null
+  },
+  "MXLZC__MKDKJ__IMO_9706906": {
+    "distance_nm": 8030.1489049312595,
+    "status": "ok",
+    "error": null
+  },
+  "MXLZC__MKSNI__IMO_9706906": {
+    "distance_nm": 8060.177518613035,
+    "status": "ok",
+    "error": null
+  },
+  "MXLZC__NOBGO__IMO_9706906": {
+    "distance_nm": 6859.558811233096,
+    "status": "ok",
+    "error": null
+  },
+  "MXLZC__NOBOO__IMO_9706906": {
+    "distance_nm": 7148.515421021077,
+    "status": "ok",
+    "error": null
+  },
+  "MXLZC__PLBEK__IMO_9706906": {
+    "distance_nm": 7464.655160084169,
+    "status": "ok",
+    "error": null
+  },
+  "MXLZC__PLOSD__IMO_9706906": {
+    "distance_nm": 7461.094187649228,
+    "status": "ok",
+    "error": null
+  },
+  "MXLZC__PTSMT__IMO_9706906": {
+    "distance_nm": 5377.508674093484,
+    "status": "ok",
+    "error": null
+  },
+  "MXLZC__PTFAO__IMO_9706906": {
+    "distance_nm": 6185.314768054094,
+    "status": "ok",
+    "error": null
+  },
+  "MXLZC__ROCAF__IMO_9706906": {
+    "distance_nm": 7888.776208848672,
+    "status": "ok",
+    "error": null
+  },
+  "MXLZC__ROMAG__IMO_9706906": {
+    "distance_nm": 8250.683897849502,
+    "status": "ok",
+    "error": null
+  },
+  "MXLZC__RUTAM__IMO_9706906": {
+    "distance_nm": 8501.063068498031,
+    "status": "ok",
+    "error": null
+  },
+  "MXLZC__RUMOW__IMO_9706906": {
+    "distance_nm": 8422.084685016756,
+    "status": "ok",
+    "error": null
+  },
+  "MXLZC__SMAQ8__IMO_9706906": {
+    "distance_nm": null,
+    "status": "error",
+    "error": "HTTP 500: {\"errorCode\":500,\"message\":\"An unexpected error has occurred\",\"details\":[],\"time\":\"2026-04-22T01:49:50.045094746Z\"}"
+  },
+  "MXLZC__RSXXX__IMO_9706906": {
+    "distance_nm": null,
+    "status": "error",
+    "error": "HTTP 500: {\"errorCode\":500,\"message\":\"An unexpected error has occurred\",\"details\":[],\"time\":\"2026-04-22T01:49:57.765364204Z\"}"
+  },
+  "MXLZC__RSAPT__IMO_9706906": {
+    "distance_nm": null,
+    "status": "error",
+    "error": "HTTP 500: {\"errorCode\":500,\"message\":\"not trade region found for : RSAPT\",\"details\":null,\"time\":\"2026-04-22T01:50:26.788221152Z\"}"
+  },
+  "MXLZC__SKBAB__IMO_9706906": {
+    "distance_nm": null,
+    "status": "error",
+    "error": "HTTP 500: {\"errorCode\":500,\"message\":\"An unexpected error has occurred\",\"details\":[],\"time\":\"2026-04-22T01:50:36.385440477Z\"}"
+  },
+  "MXLZC__SKKNP__IMO_9706906": {
+    "distance_nm": null,
+    "status": "error",
+    "error": "HTTP 500: {\"errorCode\":500,\"message\":\"An unexpected error has occurred\",\"details\":[],\"time\":\"2026-04-22T01:50:44.052494953Z\"}"
+  },
+  "MXLZC__SIPOW__IMO_9706906": {
+    "distance_nm": null,
+    "status": "error",
+    "error": "HTTP 500: {\"errorCode\":500,\"message\":\"An unexpected error has occurred\",\"details\":[],\"time\":\"2026-04-22T01:50:51.862276645Z\"}"
+  },
+  "MXLZC__SIJCE__IMO_9706906": {
+    "distance_nm": 7979.074721298978,
+    "status": "ok",
+    "error": null
+  },
+  "MXLZC__ESCAR__IMO_9706906": {
+    "distance_nm": 6521.05837746996,
+    "status": "ok",
+    "error": null
+  },
+  "MXLZC__ESPTN__IMO_9706906": {
+    "distance_nm": 6325.606942338161,
+    "status": "ok",
+    "error": null
+  },
+  "MXLZC__SJBAR__IMO_9706906": {
+    "distance_nm": 7287.059713364224,
+    "status": "ok",
+    "error": null
+  },
+  "MXLZC__SJSVE__IMO_9706906": {
+    "distance_nm": 7293.120454714496,
+    "status": "ok",
+    "error": null
+  },
+  "MXLZC__SEGOT__IMO_9706906": {
+    "distance_nm": 7056.2964033483,
+    "status": "ok",
+    "error": null
+  },
+  "MXLZC__SEHAD__IMO_9706906": {
+    "distance_nm": 7118.765641401679,
+    "status": "ok",
+    "error": null
+  },
+  "MXLZC__CHXXX__IMO_9706906": {
+    "distance_nm": null,
+    "status": "error",
+    "error": "HTTP 500: {\"errorCode\":500,\"message\":\"An unexpected error has occurred\",\"details\":[],\"time\":\"2026-04-22T01:51:55.089140397Z\"}"
+  },
+  "MXLZC__CHGTT__IMO_9706906": {
+    "distance_nm": 7159.262291508486,
+    "status": "ok",
+    "error": null
+  },
+  "MXLZC__UAODS__IMO_9706906": {
+    "distance_nm": 8428.162358389747,
+    "status": "ok",
+    "error": null
+  },
+  "MXLZC__UAILK__IMO_9706906": {
+    "distance_nm": 8419.703909576678,
+    "status": "ok",
+    "error": null
+  },
+  "MXLZC__GBBOH__IMO_9706906": {
+    "distance_nm": 6499.684981604152,
+    "status": "ok",
+    "error": null
+  },
+  "MXLZC__GBLBA__IMO_9706906": {
+    "distance_nm": 6864.630386677329,
+    "status": "ok",
+    "error": null
+  },
+  "MXLZC__AXMHQ__IMO_9706906": {
+    "distance_nm": 7600.022988768057,
+    "status": "ok",
+    "error": null
+  },
+  "MXZLO__ALROM__IMO_9706906": {
+    "distance_nm": 7497.238193841617,
+    "status": "ok",
+    "error": null
+  },
+  "MXZLO__ALSAR__IMO_9706906": {
+    "distance_nm": 7444.414373114278,
+    "status": "ok",
+    "error": null
+  },
+  "MXZLO__ATXXX__IMO_9706906": {
+    "distance_nm": null,
+    "status": "error",
+    "error": "HTTP 500: {\"errorCode\":500,\"message\":\"An unexpected error has occurred\",\"details\":[],\"time\":\"2026-04-22T01:53:29.211007741Z\"}"
+  },
+  "MXZLO__ATKTT__IMO_9706906": {
+    "distance_nm": null,
+    "status": "error",
+    "error": "HTTP 500: {\"errorCode\":500,\"message\":\"not trade region found for : ATKTT\",\"details\":null,\"time\":\"2026-04-22T01:54:01.725761905Z\"}"
+  },
+  "MXZLO__BYKYC__IMO_9706906": {
+    "distance_nm": null,
+    "status": "error",
+    "error": "HTTP 500: {\"errorCode\":500,\"message\":\"not trade region found for : BYKYC\",\"details\":null,\"time\":\"2026-04-22T01:54:30.005047228Z\"}"
+  },
+  "MXZLO__BYSNM__IMO_9706906": {
+    "distance_nm": 8910.952385370596,
+    "status": "ok",
+    "error": null
+  },
+  "MXZLO__BEANR__IMO_9706906": {
+    "distance_nm": 6569.4355259806935,
+    "status": "ok",
+    "error": null
+  },
+  "MXZLO__BEBRU__IMO_9706906": {
+    "distance_nm": 6642.155412803676,
+    "status": "ok",
+    "error": null
+  },
+  "MXZLO__BAMAG__IMO_9706906": {
+    "distance_nm": 7855.113784571758,
+    "status": "ok",
+    "error": null
+  },
+  "MXZLO__BAZNK__IMO_9706906": {
+    "distance_nm": 7869.689098330302,
+    "status": "ok",
+    "error": null
+  },
+  "MXZLO__BGRDU__IMO_9706906": {
+    "distance_nm": 8195.923498526485,
+    "status": "ok",
+    "error": null
+  },
+  "MXZLO__BGBOJ__IMO_9706906": {
+    "distance_nm": 8076.6979414973,
+    "status": "ok",
+    "error": null
+  },
+  "MXZLO__HRGNA__IMO_9706906": {
+    "distance_nm": 7680.894855283813,
+    "status": "ok",
+    "error": null
+  },
+  "MXZLO__HRVRA__IMO_9706906": {
+    "distance_nm": 7631.98982122316,
+    "status": "ok",
+    "error": null
+  },
+  "MXZLO__CZDCB__IMO_9706906": {
+    "distance_nm": 7381.541661263667,
+    "status": "ok",
+    "error": null
+  },
+  "MXZLO__CZULN__IMO_9706906": {
+    "distance_nm": 7390.569834633597,
+    "status": "ok",
+    "error": null
+  },
+  "MXZLO__DKROD__IMO_9706906": {
+    "distance_nm": 7090.396296218806,
+    "status": "ok",
+    "error": null
+  },
+  "MXZLO__DKKLP__IMO_9706906": {
+    "distance_nm": 6869.477563268232,
+    "status": "ok",
+    "error": null
+  },
+  "MXZLO__EESLM__IMO_9706906": {
+    "distance_nm": 7652.823371261959,
+    "status": "ok",
+    "error": null
+  },
+  "MXZLO__EEKLE__IMO_9706906": {
+    "distance_nm": 7501.511939153655,
+    "status": "ok",
+    "error": null
+  },
+  "MXZLO__FOHYV__IMO_9706906": {
+    "distance_nm": 6460.9670626328725,
+    "status": "ok",
+    "error": null
+  },
+  "MXZLO__FOKOL__IMO_9706906": {
+    "distance_nm": 6468.979295969154,
+    "status": "ok",
+    "error": null
+  },
+  "MXZLO__FIJOE__IMO_9706906": {
+    "distance_nm": 7817.166436028646,
+    "status": "ok",
+    "error": null
+  },
+  "MXZLO__FIJYV__IMO_9706906": {
+    "distance_nm": 7716.961336832297,
+    "status": "ok",
+    "error": null
+  },
+  "MXZLO__FR8GT__IMO_9706906": {
+    "distance_nm": null,
+    "status": "error",
+    "error": "HTTP 500: {\"errorCode\":500,\"message\":\"An unexpected error has occurred\",\"details\":[],\"time\":\"2026-04-22T01:57:13.502008546Z\"}"
+  },
+  "MXZLO__FR9AV__IMO_9706906": {
+    "distance_nm": null,
+    "status": "error",
+    "error": "HTTP 500: {\"errorCode\":500,\"message\":\"An unexpected error has occurred\",\"details\":[],\"time\":\"2026-04-22T01:57:20.879803867Z\"}"
+  },
+  "MXZLO__DEAAH__IMO_9706906": {
+    "distance_nm": 6760.679436084997,
+    "status": "ok",
+    "error": null
+  },
+  "MXZLO__DEMAO__IMO_9706906": {
+    "distance_nm": 6982.268194692227,
+    "status": "ok",
+    "error": null
+  },
+  "MXZLO__GIGIB__IMO_9706906": {
+    "distance_nm": 6169.912868279049,
+    "status": "ok",
+    "error": null
+  },
+  "MXZLO__GRAIO__IMO_9706906": {
+    "distance_nm": 7645.431799139328,
+    "status": "ok",
+    "error": null
+  },
+  "MXZLO__GRATS__IMO_9706906": {
+    "distance_nm": 7698.80589764612,
+    "status": "ok",
+    "error": null
+  },
+  "MXZLO__GGACI__IMO_9706906": {
+    "distance_nm": 6359.357928622837,
+    "status": "ok",
+    "error": null
+  },
+  "MXZLO__GGGCI__IMO_9706906": {
+    "distance_nm": 6341.187817351131,
+    "status": "ok",
+    "error": null
+  },
+  "MXZLO__HUBUD__IMO_9706906": {
+    "distance_nm": null,
+    "status": "error",
+    "error": "HTTP 500: {\"errorCode\":500,\"message\":\"not trade region found for : HUBUD\",\"details\":null,\"time\":\"2026-04-22T01:58:51.908311198Z\"}"
+  },
+  "MXZLO__HUDEB__IMO_9706906": {
+    "distance_nm": null,
+    "status": "error",
+    "error": "HTTP 500: {\"errorCode\":500,\"message\":\"An unexpected error has occurred\",\"details\":[],\"time\":\"2026-04-22T01:58:59.652266384Z\"}"
+  },
+  "MXZLO__ISBOL__IMO_9706906": {
+    "distance_nm": 6122.067662215364,
+    "status": "ok",
+    "error": null
+  },
+  "MXZLO__ISBUD__IMO_9706906": {
+    "distance_nm": 6140.280832432484,
+    "status": "ok",
+    "error": null
+  },
+  "MXZLO__IEDFY__IMO_9706906": {
+    "distance_nm": 6430.804155500369,
+    "status": "ok",
+    "error": null
+  },
+  "MXZLO__IEEKY__IMO_9706906": {
+    "distance_nm": 6331.689684809783,
+    "status": "ok",
+    "error": null
+  },
+  "MXZLO__IMDGS__IMO_9706906": {
+    "distance_nm": 6438.346149508821,
+    "status": "ok",
+    "error": null
+  },
+  "MXZLO__IMPEL__IMO_9706906": {
+    "distance_nm": 6407.785886510606,
+    "status": "ok",
+    "error": null
+  },
+  "MXZLO__ITACT__IMO_9706906": {
+    "distance_nm": 7218.108758722135,
+    "status": "ok",
+    "error": null
+  },
+  "MXZLO__ITBCB__IMO_9706906": {
+    "distance_nm": 7180.625952133929,
+    "status": "ok",
+    "error": null
+  },
+  "MXZLO__JESTH__IMO_9706906": {
+    "distance_nm": 6363.85923363005,
+    "status": "ok",
+    "error": null
+  },
+  "MXZLO__JESAB__IMO_9706906": {
+    "distance_nm": 6358.959059900717,
+    "status": "ok",
+    "error": null
+  },
+  "MXZLO__LVMRX__IMO_9706906": {
+    "distance_nm": 7473.076257527891,
+    "status": "ok",
+    "error": null
+  },
+  "MXZLO__LVLPX__IMO_9706906": {
+    "distance_nm": 7359.922073956061,
+    "status": "ok",
+    "error": null
+  },
+  "MXZLO__LTMLM__IMO_9706906": {
+    "distance_nm": 7361.799464227429,
+    "status": "ok",
+    "error": null
+  },
+  "MXZLO__LTMOM__IMO_9706906": {
+    "distance_nm": 7362.116634007436,
+    "status": "ok",
+    "error": null
+  },
+  "MXZLO__LULUX__IMO_9706906": {
+    "distance_nm": null,
+    "status": "error",
+    "error": "HTTP 500: {\"errorCode\":500,\"message\":\"An unexpected error has occurred\",\"details\":[],\"time\":\"2026-04-22T02:01:07.498051342Z\"}"
+  },
+  "MXZLO__LUXXX__IMO_9706906": {
+    "distance_nm": null,
+    "status": "error",
+    "error": "HTTP 500: {\"errorCode\":500,\"message\":\"An unexpected error has occurred\",\"details\":[],\"time\":\"2026-04-22T02:01:17.503536866Z\"}"
+  },
+  "MXZLO__MTFLO__IMO_9706906": {
+    "distance_nm": 7146.497574386866,
+    "status": "ok",
+    "error": null
+  },
+  "MXZLO__MTBAL__IMO_9706906": {
+    "distance_nm": 7144.534622453548,
+    "status": "ok",
+    "error": null
+  },
+  "MXZLO__MDXXX__IMO_9706906": {
+    "distance_nm": null,
+    "status": "error",
+    "error": "HTTP 500: {\"errorCode\":500,\"message\":\"An unexpected error has occurred\",\"details\":[],\"time\":\"2026-04-22T02:02:30.4072037Z\"}"
+  },
+  "MXZLO__MDGIU__IMO_9706906": {
+    "distance_nm": null,
+    "status": "error",
+    "error": "HTTP 500: {\"errorCode\":500,\"message\":\"An unexpected error has occurred\",\"details\":[],\"time\":\"2026-04-22T02:02:50.011094874Z\"}"
+  },
+  "MXZLO__MCMCM__IMO_9706906": {
+    "distance_nm": null,
+    "status": "error",
+    "error": "HTTP 500: {\"errorCode\":500,\"message\":\"An unexpected error has occurred\",\"details\":[],\"time\":\"2026-04-22T02:02:58.470501513Z\"}"
+  },
+  "MXZLO__MCMON__IMO_9706906": {
+    "distance_nm": null,
+    "status": "error",
+    "error": "HTTP 500: {\"errorCode\":500,\"message\":\"An unexpected error has occurred\",\"details\":[],\"time\":\"2026-04-22T02:03:06.175229551Z\"}"
+  },
+  "MXZLO__MEHNO__IMO_9706906": {
+    "distance_nm": null,
+    "status": "error",
+    "error": "HTTP 500: {\"errorCode\":500,\"message\":\"An unexpected error has occurred\",\"details\":[],\"time\":\"2026-04-22T02:03:14.272963928Z\"}"
+  },
+  "MXZLO__MEBAR__IMO_9706906": {
+    "distance_nm": 7519.1337853025525,
+    "status": "ok",
+    "error": null
+  },
+  "MXZLO__NLAMS__IMO_9706906": {
+    "distance_nm": 6629.0499177733545,
+    "status": "ok",
+    "error": null
+  },
+  "MXZLO__NLEIN__IMO_9706906": {
+    "distance_nm": 6728.1807790178855,
+    "status": "ok",
+    "error": null
+  },
+  "MXZLO__MKDKJ__IMO_9706906": {
+    "distance_nm": 7906.886860167512,
+    "status": "ok",
+    "error": null
+  },
+  "MXZLO__MKSNI__IMO_9706906": {
+    "distance_nm": 7936.915473849288,
+    "status": "ok",
+    "error": null
+  },
+  "MXZLO__NOBGO__IMO_9706906": {
+    "distance_nm": 6736.296766469348,
+    "status": "ok",
+    "error": null
+  },
+  "MXZLO__NOBOO__IMO_9706906": {
+    "distance_nm": 7025.253376257329,
+    "status": "ok",
+    "error": null
+  },
+  "MXZLO__PLBEK__IMO_9706906": {
+    "distance_nm": 7341.393115320421,
+    "status": "ok",
+    "error": null
+  },
+  "MXZLO__PLOSD__IMO_9706906": {
+    "distance_nm": 7337.83214288548,
+    "status": "ok",
+    "error": null
+  },
+  "MXZLO__PTSMT__IMO_9706906": {
+    "distance_nm": 5254.246629329736,
+    "status": "ok",
+    "error": null
+  },
+  "MXZLO__PTFAO__IMO_9706906": {
+    "distance_nm": 6062.052723290347,
+    "status": "ok",
+    "error": null
+  },
+  "MXZLO__ROCAF__IMO_9706906": {
+    "distance_nm": 7765.514164084924,
+    "status": "ok",
+    "error": null
+  },
+  "MXZLO__ROMAG__IMO_9706906": {
+    "distance_nm": 8127.421853085755,
+    "status": "ok",
+    "error": null
+  },
+  "MXZLO__RUTAM__IMO_9706906": {
+    "distance_nm": 8377.801023734284,
+    "status": "ok",
+    "error": null
+  },
+  "MXZLO__RUMOW__IMO_9706906": {
+    "distance_nm": 8298.822640253007,
+    "status": "ok",
+    "error": null
+  },
+  "MXZLO__SMAQ8__IMO_9706906": {
+    "distance_nm": null,
+    "status": "error",
+    "error": "HTTP 500: {\"errorCode\":500,\"message\":\"An unexpected error has occurred\",\"details\":[],\"time\":\"2026-04-22T02:05:58.253503495Z\"}"
+  },
+  "MXZLO__RSXXX__IMO_9706906": {
+    "distance_nm": null,
+    "status": "error",
+    "error": "HTTP 500: {\"errorCode\":500,\"message\":\"An unexpected error has occurred\",\"details\":[],\"time\":\"2026-04-22T02:06:06.198759221Z\"}"
+  },
+  "MXZLO__RSAPT__IMO_9706906": {
+    "distance_nm": null,
+    "status": "error",
+    "error": "HTTP 500: {\"errorCode\":500,\"message\":\"not trade region found for : RSAPT\",\"details\":null,\"time\":\"2026-04-22T02:06:36.694608334Z\"}"
+  },
+  "MXZLO__SKBAB__IMO_9706906": {
+    "distance_nm": null,
+    "status": "error",
+    "error": "HTTP 500: {\"errorCode\":500,\"message\":\"An unexpected error has occurred\",\"details\":[],\"time\":\"2026-04-22T02:06:44.412633319Z\"}"
+  },
+  "MXZLO__SKKNP__IMO_9706906": {
+    "distance_nm": null,
+    "status": "error",
+    "error": "HTTP 500: {\"errorCode\":500,\"message\":\"An unexpected error has occurred\",\"details\":[],\"time\":\"2026-04-22T02:06:52.22512205Z\"}"
+  },
+  "MXZLO__SIPOW__IMO_9706906": {
+    "distance_nm": null,
+    "status": "error",
+    "error": "HTTP 500: {\"errorCode\":500,\"message\":\"An unexpected error has occurred\",\"details\":[],\"time\":\"2026-04-22T02:07:00.208443673Z\"}"
+  },
+  "MXZLO__SIJCE__IMO_9706906": {
+    "distance_nm": 7855.812676535231,
+    "status": "ok",
+    "error": null
+  },
+  "MXZLO__ESCAR__IMO_9706906": {
+    "distance_nm": 6397.7963327062125,
+    "status": "ok",
+    "error": null
+  },
+  "MXZLO__ESPTN__IMO_9706906": {
+    "distance_nm": 6202.344897574413,
+    "status": "ok",
+    "error": null
+  },
+  "MXZLO__SJBAR__IMO_9706906": {
+    "distance_nm": 7163.797668600477,
+    "status": "ok",
+    "error": null
+  },
+  "MXZLO__SJSVE__IMO_9706906": {
+    "distance_nm": 7169.858409950749,
+    "status": "ok",
+    "error": null
+  },
+  "MXZLO__SEGOT__IMO_9706906": {
+    "distance_nm": 6933.034358584552,
+    "status": "ok",
+    "error": null
+  },
+  "MXZLO__SEHAD__IMO_9706906": {
+    "distance_nm": 6995.503596637931,
+    "status": "ok",
+    "error": null
+  },
+  "MXZLO__CHXXX__IMO_9706906": {
+    "distance_nm": null,
+    "status": "error",
+    "error": "HTTP 500: {\"errorCode\":500,\"message\":\"An unexpected error has occurred\",\"details\":[],\"time\":\"2026-04-22T02:07:57.663567466Z\"}"
+  },
+  "MXZLO__CHGTT__IMO_9706906": {
+    "distance_nm": 7036.0002467447375,
+    "status": "ok",
+    "error": null
+  },
+  "MXZLO__UAODS__IMO_9706906": {
+    "distance_nm": 8304.900313626,
+    "status": "ok",
+    "error": null
+  },
+  "MXZLO__UAILK__IMO_9706906": {
+    "distance_nm": 8296.44186481293,
+    "status": "ok",
+    "error": null
+  },
+  "MXZLO__GBBOH__IMO_9706906": {
+    "distance_nm": 6376.422936840404,
+    "status": "ok",
+    "error": null
+  },
+  "MXZLO__GBLBA__IMO_9706906": {
+    "distance_nm": 6741.3683419135805,
+    "status": "ok",
+    "error": null
+  },
+  "MXZLO__AXMHQ__IMO_9706906": {
+    "distance_nm": 7476.760944004309,
+    "status": "ok",
+    "error": null
+  },
+  "NICIO__ALROM__IMO_9706906": {
+    "distance_nm": 6435.647755198211,
+    "status": "ok",
+    "error": null
+  },
+  "NICIO__ALSAR__IMO_9706906": {
+    "distance_nm": 6382.823934470871,
+    "status": "ok",
+    "error": null
+  },
+  "NICIO__ATXXX__IMO_9706906": {
+    "distance_nm": null,
+    "status": "error",
+    "error": "HTTP 500: {\"errorCode\":500,\"message\":\"An unexpected error has occurred\",\"details\":[],\"time\":\"2026-04-22T02:09:05.704175591Z\"}"
+  },
+  "NICIO__ATKTT__IMO_9706906": {
+    "distance_nm": null,
+    "status": "error",
+    "error": "HTTP 500: {\"errorCode\":500,\"message\":\"not trade region found for : ATKTT\",\"details\":null,\"time\":\"2026-04-22T02:09:34.407200966Z\"}"
+  },
+  "NICIO__BYKYC__IMO_9706906": {
+    "distance_nm": null,
+    "status": "error",
+    "error": "HTTP 500: {\"errorCode\":500,\"message\":\"not trade region found for : BYKYC\",\"details\":null,\"time\":\"2026-04-22T02:10:11.813208328Z\"}"
+  },
+  "NICIO__BYSNM__IMO_9706906": {
+    "distance_nm": 7849.36194672719,
+    "status": "ok",
+    "error": null
+  },
+  "NICIO__BEANR__IMO_9706906": {
+    "distance_nm": 5507.845087337287,
+    "status": "ok",
+    "error": null
+  },
+  "NICIO__BEBRU__IMO_9706906": {
+    "distance_nm": 5580.564974160269,
+    "status": "ok",
+    "error": null
+  },
+  "NICIO__BAMAG__IMO_9706906": {
+    "distance_nm": 6793.523345928351,
+    "status": "ok",
+    "error": null
+  },
+  "NICIO__BAZNK__IMO_9706906": {
+    "distance_nm": 6808.098659686895,
+    "status": "ok",
+    "error": null
+  },
+  "NICIO__BGRDU__IMO_9706906": {
+    "distance_nm": 7134.333059883078,
+    "status": "ok",
+    "error": null
+  },
+  "NICIO__BGBOJ__IMO_9706906": {
+    "distance_nm": 7015.1075028538935,
+    "status": "ok",
+    "error": null
+  },
+  "NICIO__HRGNA__IMO_9706906": {
+    "distance_nm": 6619.304416640406,
+    "status": "ok",
+    "error": null
+  },
+  "NICIO__HRVRA__IMO_9706906": {
+    "distance_nm": 6570.399382579753,
+    "status": "ok",
+    "error": null
+  },
+  "NICIO__CZDCB__IMO_9706906": {
+    "distance_nm": 6319.951222620261,
+    "status": "ok",
+    "error": null
+  },
+  "NICIO__CZULN__IMO_9706906": {
+    "distance_nm": 6328.979395990191,
+    "status": "ok",
+    "error": null
+  },
+  "NICIO__DKROD__IMO_9706906": {
+    "distance_nm": 6028.8058575754,
+    "status": "ok",
+    "error": null
+  },
+  "NICIO__DKKLP__IMO_9706906": {
+    "distance_nm": 5807.887124624826,
+    "status": "ok",
+    "error": null
+  },
+  "NICIO__EESLM__IMO_9706906": {
+    "distance_nm": 6591.232932618554,
+    "status": "ok",
+    "error": null
+  },
+  "NICIO__EEKLE__IMO_9706906": {
+    "distance_nm": 6439.921500510248,
+    "status": "ok",
+    "error": null
+  },
+  "NICIO__FOHYV__IMO_9706906": {
+    "distance_nm": 5399.376623989467,
+    "status": "ok",
+    "error": null
+  },
+  "NICIO__FOKOL__IMO_9706906": {
+    "distance_nm": 5407.388857325748,
+    "status": "ok",
+    "error": null
+  },
+  "NICIO__FIJOE__IMO_9706906": {
+    "distance_nm": 6755.57599738524,
+    "status": "ok",
+    "error": null
+  },
+  "NICIO__FIJYV__IMO_9706906": {
+    "distance_nm": 6655.370898188891,
+    "status": "ok",
+    "error": null
+  },
+  "NICIO__FR8GT__IMO_9706906": {
+    "distance_nm": null,
+    "status": "error",
+    "error": "HTTP 500: {\"errorCode\":500,\"message\":\"An unexpected error has occurred\",\"details\":[],\"time\":\"2026-04-22T02:12:53.248595346Z\"}"
+  },
+  "NICIO__FR9AV__IMO_9706906": {
+    "distance_nm": null,
+    "status": "error",
+    "error": "HTTP 500: {\"errorCode\":500,\"message\":\"An unexpected error has occurred\",\"details\":[],\"time\":\"2026-04-22T02:13:00.620590228Z\"}"
+  },
+  "NICIO__DEAAH__IMO_9706906": {
+    "distance_nm": 5699.08899744159,
+    "status": "ok",
+    "error": null
+  },
+  "NICIO__DEMAO__IMO_9706906": {
+    "distance_nm": 5920.677756048821,
+    "status": "ok",
+    "error": null
+  },
+  "NICIO__GIGIB__IMO_9706906": {
+    "distance_nm": 5108.322429635642,
+    "status": "ok",
+    "error": null
+  },
+  "NICIO__GRAIO__IMO_9706906": {
+    "distance_nm": 6583.841360495921,
+    "status": "ok",
+    "error": null
+  },
+  "NICIO__GRATS__IMO_9706906": {
+    "distance_nm": 6637.215459002713,
+    "status": "ok",
+    "error": null
+  },
+  "NICIO__GGACI__IMO_9706906": {
+    "distance_nm": 5297.76748997943,
+    "status": "ok",
+    "error": null
+  },
+  "NICIO__GGGCI__IMO_9706906": {
+    "distance_nm": 5279.597378707725,
+    "status": "ok",
+    "error": null
+  },
+  "NICIO__HUBUD__IMO_9706906": {
+    "distance_nm": null,
+    "status": "error",
+    "error": "HTTP 500: {\"errorCode\":500,\"message\":\"not trade region found for : HUBUD\",\"details\":null,\"time\":\"2026-04-22T02:14:19.195658638Z\"}"
+  },
+  "NICIO__HUDEB__IMO_9706906": {
+    "distance_nm": null,
+    "status": "error",
+    "error": "HTTP 500: {\"errorCode\":500,\"message\":\"An unexpected error has occurred\",\"details\":[],\"time\":\"2026-04-22T02:14:26.942346177Z\"}"
   }
 }

@@ -7,6 +7,7 @@ from fastapi import UploadFile
 from app.main import healthcheck
 from app.routes.coordenadas import _json_safe_df, _safe_json_float
 from app.routes.iata import _numeric_series
+from app.routes.maritimo import _build_result_view_df as _build_maritimo_result_view_df
 from app.routes.maritimo import _build_template_df as _build_maritimo_template_df
 from app.routes.terrestre_ruta import _build_template_df
 from app.services.coordenadas_service import CoordenadasService
@@ -464,6 +465,41 @@ def _sample_maritimo_pairs_df() -> pd.DataFrame:
     )
 
 
+def _sample_maritimo_master_df() -> pd.DataFrame:
+    return pd.DataFrame(
+        [
+            {
+                "Pais de origen": "Chile",
+                "Ciudad Origen": "Coronel",
+                "Pais de destino": "Netherlands",
+                "Ciudad Destino": "Rotterdam",
+                "Distancia": 13390,
+            },
+            {
+                "Pais de origen": "Chile",
+                "Ciudad Origen": "coronel ",
+                "Pais de destino": "Nederland",
+                "Ciudad Destino": "Roterdam",
+                "Distancia": 13395,
+            },
+            {
+                "Pais de origen": "Chile",
+                "Ciudad Origen": "Coronel",
+                "Pais de destino": "Paises Bajos",
+                "Ciudad Destino": "ROTTERDAM",
+                "Distancia": 13405,
+            },
+            {
+                "Pais de origen": "Chile",
+                "Ciudad Origen": "Coronel",
+                "Pais de destino": "Netherlands",
+                "Ciudad Destino": "Rotterdam",
+                "Distancia": 18000,
+            },
+        ]
+    )
+
+
 def test_maritimo_service_resolves_valid_portcodes():
     service = MaritimoService(pairs_df=_sample_maritimo_pairs_df())
     df = pd.DataFrame([{"Codigo_puerto_origen": "arbue", "Codigo_puerto_destino": "clsai"}])
@@ -475,6 +511,8 @@ def test_maritimo_service_resolves_valid_portcodes():
     assert result["Puerto_destino_codigo_resuelto"] == "CLSAI"
     assert result["Metodo_resolucion_origen"] == "codigo"
     assert result["Metodo_resolucion_destino"] == "codigo"
+    assert result["Tipo_distancia"] == "Exacta"
+    assert result["Fuente_distancia"] == "consolidado"
     assert result["Distancia_nm"] == 2936.86
     assert result["Distancia_km"] == round(2936.86 * 1.852, 2)
 
@@ -495,12 +533,14 @@ def test_maritimo_service_matches_city_country_with_typos():
     result = service.process(df).iloc[0]
 
     assert result["Estado"] == "OK"
-    assert result["Puerto_origen_codigo_resuelto"] == "ARBUE"
-    assert result["Puerto_destino_codigo_resuelto"] == "MXLZC"
+    assert result["Ciudad_origen_resuelta"] == "Buenos Aires"
+    assert result["Ciudad_destino_resuelta"] == "Lázaro Cárdenas"
     assert result["Metodo_resolucion_origen"] == "ciudad_pais"
     assert result["Metodo_resolucion_destino"] == "ciudad_pais"
+    assert result["Tipo_distancia"] == "Exacta"
     assert result["Coincidencia_origen_pct"] >= 84
     assert result["Coincidencia_destino_pct"] >= 84
+    assert "Se ajusto la ciudad origen" in result["Observacion_lookup"]
 
 
 def test_maritimo_service_uses_principal_port_when_only_country_is_provided():
@@ -510,10 +550,11 @@ def test_maritimo_service_uses_principal_port_when_only_country_is_provided():
     result = service.process(df).iloc[0]
 
     assert result["Estado"] == "OK"
-    assert result["Puerto_origen_codigo_resuelto"] == "ARBUE"
-    assert result["Puerto_destino_codigo_resuelto"] == "NLAMS"
+    assert result["Ciudad_origen_resuelta"] == "Buenos Aires"
+    assert result["Ciudad_destino_resuelta"] == "Amsterdam"
     assert result["Metodo_resolucion_origen"] == "pais_principal"
     assert result["Metodo_resolucion_destino"] == "pais_principal"
+    assert result["Tipo_distancia"] == "Exacta"
     assert "puerto principal" in result["Observacion_origen"].lower()
     assert "puerto principal" in result["Observacion_destino"].lower()
 
@@ -536,10 +577,58 @@ def test_maritimo_service_falls_back_to_city_country_when_portcode_is_invalid():
     result = service.process(df).iloc[0]
 
     assert result["Estado"] == "OK"
-    assert result["Puerto_origen_codigo_resuelto"] == "ARBUE"
-    assert result["Puerto_destino_codigo_resuelto"] == "CLSAI"
+    assert result["Ciudad_origen_resuelta"] == "Buenos Aires"
+    assert result["Ciudad_destino_resuelta"] == "San Antonio"
     assert "codigo de puerto" in result["Observacion_origen"].lower()
     assert "codigo de puerto" in result["Observacion_destino"].lower()
+    assert result["Tipo_distancia"] == "Exacta"
+
+
+def test_maritimo_service_uses_master_catalog_for_city_country_pairs():
+    service = MaritimoService(
+        pairs_df=_sample_maritimo_pairs_df(),
+        city_master_df=_sample_maritimo_master_df(),
+    )
+    df = pd.DataFrame(
+        [
+            {
+                "Ciudad_origen": "Coronel",
+                "Pais_origen": "Chile",
+                "Ciudad_destino": "Roterdam",
+                "Pais_destino": "Paises Bajos",
+            }
+        ]
+    )
+
+    result = service.process(df).iloc[0]
+
+    assert result["Estado"] == "OK"
+    assert result["Tipo_distancia"] == "Exacta"
+    assert result["Fuente_distancia"].startswith("maestra_")
+    assert result["Ciudad_origen_resuelta"] == "Coronel"
+    assert result["Ciudad_destino_resuelta"] == "Roterdam"
+    assert result["Distancia_km"] == 13395.0
+
+
+def test_maritimo_service_marks_proxy_when_city_is_missing_but_country_exists():
+    service = MaritimoService(pairs_df=_sample_maritimo_pairs_df())
+    df = pd.DataFrame(
+        [
+            {
+                "Ciudad_origen": "Buenos Aires",
+                "Pais_origen": "Argentina",
+                "Ciudad_destino": "Ciudad Inventada",
+                "Pais_destino": "Mexico",
+            }
+        ]
+    )
+
+    result = service.process(df).iloc[0]
+
+    assert result["Estado"] == "OK"
+    assert result["Tipo_distancia"] == "Distancia Proxy"
+    assert result["Ciudad_destino_resuelta"] == "Lázaro Cárdenas"
+    assert "Destino proxy: Lázaro Cárdenas, Mexico" in result["Observacion_lookup"]
 
 
 def test_maritimo_template_builder_contains_expected_columns():
@@ -552,3 +641,43 @@ def test_maritimo_template_builder_contains_expected_columns():
         "Ciudad_destino",
         "Pais_destino",
     ]
+
+
+def test_maritimo_result_view_keeps_only_user_facing_columns():
+    raw = pd.DataFrame(
+        [
+            {
+                "Ciudad_origen_resuelta": "Buenos Aires",
+                "Pais_origen_resuelto": "Argentina",
+                "Ciudad_destino_resuelta": "Manzanillo",
+                "Pais_destino_resuelto": "Mexico",
+                "Tipo_distancia": "Distancia Proxy",
+                "Distancia_km": 12010.12,
+                "Observacion_lookup": "Destino proxy: Manzanillo, Mexico",
+                "Estado": "OK",
+            },
+            {
+                "Ciudad_origen": "Coronel",
+                "Pais_origen": "Chile",
+                "Ciudad_destino": "Roterdam",
+                "Pais_destino": "Paises Bajos",
+                "Estado": "DISTANCIA MARITIMA NO ENCONTRADA",
+            },
+        ]
+    )
+
+    view = _build_maritimo_result_view_df(raw)
+
+    assert list(view.columns) == [
+        "Ciudad_origen",
+        "Pais_origen",
+        "Ciudad_destino",
+        "Pais_destino",
+        "Tipo_distancia",
+        "Distancia_km",
+        "Observacion",
+        "Estado",
+    ]
+    assert view.iloc[0]["Observacion"] == "Destino proxy: Manzanillo, Mexico"
+    assert view.iloc[1]["Ciudad_origen"] == "Coronel"
+    assert view.iloc[1]["Pais_destino"] == "Paises Bajos"

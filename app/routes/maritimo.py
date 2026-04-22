@@ -42,6 +42,105 @@ def _numeric_series(df: pd.DataFrame, column: str) -> pd.Series:
     return series.replace([np.inf, -np.inf], np.nan).fillna(0)
 
 
+def _is_blankish(value: object) -> bool:
+    if value is None:
+        return True
+    try:
+        if pd.isna(value):
+            return True
+    except TypeError:
+        pass
+    return isinstance(value, str) and not value.strip()
+
+
+def _coalesce_columns(df: pd.DataFrame, columns: list[str]) -> pd.Series:
+    result = pd.Series([None] * len(df), index=df.index, dtype=object)
+    for column in columns:
+        if column not in df.columns:
+            continue
+        values = df[column].astype(object)
+        values = values.where(pd.notna(values), None)
+        blank_mask = values.map(_is_blankish)
+        values = values.mask(blank_mask, None)
+        result_blank_mask = result.map(_is_blankish)
+        result = result.where(~result_blank_mask, values)
+    return result
+
+
+def _join_observations(row: pd.Series) -> str | None:
+    notes: list[str] = []
+    for column in ["Observacion_origen", "Observacion_destino", "Observacion_lookup"]:
+        value = row.get(column)
+        if _is_blankish(value):
+            continue
+        text = str(value).strip()
+        if text not in notes:
+            notes.append(text)
+    if not notes:
+        return None
+    return " | ".join(notes)
+
+
+def _build_result_view_df(result_df: pd.DataFrame) -> pd.DataFrame:
+    if result_df.empty:
+        return pd.DataFrame(
+            columns=[
+                "Ciudad_origen",
+                "Pais_origen",
+                "Ciudad_destino",
+                "Pais_destino",
+                "Tipo_distancia",
+                "Distancia_km",
+                "Observacion",
+                "Estado",
+            ]
+        )
+
+    distance_km = pd.to_numeric(result_df.get("Distancia_km"), errors="coerce").round(2)
+
+    view_df = pd.DataFrame(
+        {
+            "Ciudad_origen": _coalesce_columns(
+                result_df,
+                [
+                    "Ciudad_origen_resuelta",
+                    "Ciudad_origen",
+                    "origin_port_name",
+                    "Puerto_origen",
+                    "Consulta_origen",
+                    "Codigo_puerto_origen",
+                    "origin_portcode",
+                ],
+            ),
+            "Pais_origen": _coalesce_columns(
+                result_df,
+                ["Pais_origen_resuelto", "Pais_origen", "origin_country", "Country_origen"],
+            ),
+            "Ciudad_destino": _coalesce_columns(
+                result_df,
+                [
+                    "Ciudad_destino_resuelta",
+                    "Ciudad_destino",
+                    "destination_port_name",
+                    "Puerto_destino",
+                    "Consulta_destino",
+                    "Codigo_puerto_destino",
+                    "destination_portcode",
+                ],
+            ),
+            "Pais_destino": _coalesce_columns(
+                result_df,
+                ["Pais_destino_resuelto", "Pais_destino", "destination_country", "Country_destino"],
+            ),
+            "Tipo_distancia": _coalesce_columns(result_df, ["Tipo_distancia"]),
+            "Distancia_km": distance_km.where(pd.notna(distance_km), None),
+            "Observacion": result_df.apply(_join_observations, axis=1),
+            "Estado": _coalesce_columns(result_df, ["Estado"]),
+        }
+    )
+    return view_df
+
+
 def _build_template_df() -> pd.DataFrame:
     return pd.DataFrame(
         columns=[
@@ -76,6 +175,7 @@ async def preview_maritimo(file: UploadFile = File(...)):
     try:
         df = await read_uploaded_table(file)
         result_df = service.process(df)
+        result_view_df = _build_result_view_df(result_df)
 
         total = int(len(result_df))
         ok_count = int((result_df["Estado"] == "OK").sum()) if total else 0
@@ -83,11 +183,11 @@ async def preview_maritimo(file: UploadFile = File(...)):
         not_found_count = int(status_series.str.contains("NO ENCONTRADO", na=False).sum()) if total else 0
         invalid_count = int(status_series.str.contains("INVALIDO", na=False).sum()) if total else 0
         missing_count = int(status_series.str.contains(r"^FALTAN DATOS$|^FALTA ", regex=True, na=False).sum()) if total else 0
+        proxy_count = int((result_df.get("Tipo_distancia") == "Distancia Proxy").sum()) if total else 0
 
-        distance_nm_series = _numeric_series(result_df, "Distancia_nm")
         distance_km_series = _numeric_series(result_df, "Distancia_km")
 
-        json_ready_df = _json_safe_df(result_df)
+        json_ready_df = _json_safe_df(result_view_df)
         rows_preview = json_ready_df.head(200).to_dict(orient="records")
         missing_preview = json_ready_df[json_ready_df["Estado"] != "OK"].head(100).to_dict(orient="records")
 
@@ -99,7 +199,7 @@ async def preview_maritimo(file: UploadFile = File(...)):
                     "not_found": not_found_count,
                     "invalid": invalid_count,
                     "missing": missing_count,
-                    "distancia_total_nm": _safe_json_float(distance_nm_series.sum()),
+                    "proxy": proxy_count,
                     "distancia_total_km": _safe_json_float(distance_km_series.sum()),
                 },
                 "rows_preview": rows_preview,
@@ -119,7 +219,8 @@ async def process_maritimo(file: UploadFile = File(...)):
     try:
         df = await read_uploaded_table(file)
         result_df = service.process(df)
-        excel_bytes = dataframe_to_excel_bytes(result_df, sheet_name="maritimo_output")
+        result_view_df = _build_result_view_df(result_df)
+        excel_bytes = dataframe_to_excel_bytes(result_view_df, sheet_name="maritimo_output")
         return StreamingResponse(
             iter([excel_bytes]),
             media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",

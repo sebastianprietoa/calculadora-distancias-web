@@ -49,16 +49,13 @@ const progressBar = document.getElementById('maritimo-progress-bar');
 const progressText = document.getElementById('maritimo-progress-text');
 const etaText = document.getElementById('maritimo-eta-text');
 const previewColumns = [
-  'Puerto_origen_codigo_resuelto',
-  'Puerto_origen_resuelto',
-  'Pais_origen_resuelto',
-  'Puerto_destino_codigo_resuelto',
-  'Puerto_destino_resuelto',
-  'Pais_destino_resuelto',
-  'Metodo_resolucion_origen',
-  'Metodo_resolucion_destino',
-  'Distancia_nm',
+  'Ciudad_origen',
+  'Pais_origen',
+  'Ciudad_destino',
+  'Pais_destino',
+  'Tipo_distancia',
   'Distancia_km',
+  'Observacion',
   'Estado'
 ];
 
@@ -91,7 +88,7 @@ function renderSummary(summary) {
   const items = [
     ['Total', summary.total], ['OK', summary.ok], ['No encontrado', summary.not_found],
     ['Formato invalido', summary.invalid], ['Faltantes', summary.missing],
-    ['Distancia total nm', summary.distancia_total_nm], ['Distancia total km', summary.distancia_total_km]
+    ['Distancia Proxy', summary.proxy], ['Distancia total km', summary.distancia_total_km]
   ];
   summaryEl.innerHTML = items.map(([k,v]) => `<div class="summary-item"><strong>${k}</strong><span>${v ?? 0}</span></div>`).join('');
 }
@@ -198,7 +195,9 @@ form.addEventListener('submit', async (e) => {
     alertText.textContent = `Se detectaron ${totalIssues} filas con observaciones antes de descargar.`;
     (payload.missing_preview || []).slice(0, 10).forEach((row, idx) => {
       const li = document.createElement('li');
-      li.textContent = `#${idx + 1}: ${row.Consulta_origen || row.Codigo_puerto_origen || '-'} -> ${row.Consulta_destino || row.Codigo_puerto_destino || '-'} | ${row.Estado || '-'}`;
+      const origin = [row.Ciudad_origen, row.Pais_origen].filter(Boolean).join(', ') || '-';
+      const destination = [row.Ciudad_destino, row.Pais_destino].filter(Boolean).join(', ') || '-';
+      li.textContent = `#${idx + 1}: ${origin} -> ${destination} | ${row.Estado || '-'}`;
       alertList.appendChild(li);
     });
     downloadBtn.disabled = true;

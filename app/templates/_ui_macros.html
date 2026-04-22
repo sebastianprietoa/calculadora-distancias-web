@@ -36,22 +36,55 @@
 </div>
 {%- endmacro %}
 
+{% macro summary_strip(items, compact=false) -%}
+<div class="overview-strip{% if compact %} overview-strip--compact{% endif %}">
+  {% for item in items %}
+  <article class="overview-stat">
+    {% if item.icon_path %}
+    <span class="overview-stat__icon">
+      <img src="{{ item.icon_path }}" alt="" aria-hidden="true">
+    </span>
+    {% endif %}
+    <div class="overview-stat__copy">
+      <span>{{ item.label }}</span>
+      <strong>{{ item.value }}</strong>
+    </div>
+  </article>
+  {% endfor %}
+</div>
+{%- endmacro %}
+
+{% macro warning_callout(title, text, tone='warning', icon_path='/static/icons/alert.svg') -%}
+<section class="notice-callout notice-callout--{{ tone }}">
+  <span class="notice-callout__icon">
+    <img src="{{ icon_path }}" alt="" aria-hidden="true">
+  </span>
+  <div class="notice-callout__copy">
+    <strong>{{ title }}</strong>
+    <p>{{ text }}</p>
+  </div>
+</section>
+{%- endmacro %}
+
 {% macro tool_card(tool, index) -%}
 <article class="dashboard-card dashboard-card--{{ tool.theme }}">
   <div class="dashboard-card__top">
-    <span class="dashboard-card__index">{{ '%02d' % index }}</span>
+    <div class="dashboard-card__identity">
+      <span class="dashboard-card__icon-chip">
+        <img src="{{ tool.icon_path }}" alt="" aria-hidden="true">
+      </span>
+      <div class="dashboard-card__title-group">
+        <p class="dashboard-card__kicker">{{ '%02d' % index }}. Modulo</p>
+        <h2>{{ tool.name }}</h2>
+      </div>
+    </div>
     {% if tool.template_path %}
     <a class="button secondary" href="{{ tool.template_path }}">Plantilla</a>
     {% endif %}
   </div>
   <div class="dashboard-card__body">
-    <h2>{{ tool.name }}</h2>
     <p>{{ tool.description }}</p>
-    <ul class="dashboard-list">
-      {% for highlight in tool.highlights %}
-      <li>{{ highlight }}</li>
-      {% endfor %}
-    </ul>
+    {{ summary_strip(tool.summary_items, true) }}
   </div>
   <div class="dashboard-card__footer">
     <span class="dashboard-card__meta">{{ tool.meta }}</span>

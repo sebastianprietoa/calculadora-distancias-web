@@ -1,6 +1,6 @@
 {% set page_title = "Distancias Aereas" %}
 {% extends "base.html" %}
-{% from "_ui_macros.html" import page_header, section_header %}
+{% from "_ui_macros.html" import page_header, section_header, summary_strip, warning_callout %}
 
 {% block content %}
 {{ page_header(
@@ -8,6 +8,18 @@
   "Distancias Aereas",
   "Calcula distancias aereas segun modo de operacion. En viaje corporativo puedes trabajar con Origen/Destino o con rutas IATA completas del tipo AAA/BBB/CCC."
 ) }}
+
+<div class="module-context">
+  {{ summary_strip([
+    {'label': 'Modos', 'value': '3 flujos', 'icon_path': '/static/icons/grid.svg'},
+    {'label': 'Entrada', 'value': 'IATA o ruta', 'icon_path': '/static/icons/iata.svg'},
+    {'label': 'Salida', 'value': 'XLSX final', 'icon_path': '/static/icons/download.svg'},
+  ]) }}
+  {{ warning_callout(
+    "Verifica que el modo coincida con la plantilla",
+    "Viaje corporativo acepta origen, destino o ruta completa. Upstream y downstream requieren que el pais de planta este informado y que los codigos IATA tengan 3 letras."
+  ) }}
+</div>
 
 <form id="iata-form" class="module-form-shell" enctype="multipart/form-data">
   <section class="card">

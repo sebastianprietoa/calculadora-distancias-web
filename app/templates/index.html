@@ -1,16 +1,20 @@
 {% set page_title = "Inicio" %}
 {% extends "base.html" %}
-{% from "_ui_macros.html" import page_header, section_header, tool_card %}
+{% from "_ui_macros.html" import page_header, section_header, summary_strip, tool_card %}
 
 {% block content %}
 {{ page_header(
   "Panel operativo",
   "Calculadora de Distancias",
-  "Gestiona los cuatro modulos reales de la operacion desde un mismo sistema visual. Cada herramienta conserva su flujo actual de carga, validacion, procesamiento y descarga."
+  "Gestiona los cuatro modulos reales de la operacion desde un mismo sistema visual. Cada herramienta conserva su flujo actual de carga, validacion, procesamiento y descarga.",
+  "Operacion compartida",
+  "4 modulos activos"
 ) }}
 
+{{ summary_strip(overview_stats) }}
+
 <section class="card">
-  {{ section_header("Modulos disponibles", "Herramientas internas") }}
+  {{ section_header("Modulos disponibles", "Acceso directo a herramientas") }}
   <div class="dashboard-grid">
     {% for tool in tools %}
     {{ tool_card(tool, loop.index) }}

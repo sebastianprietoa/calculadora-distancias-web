@@ -27,6 +27,28 @@ def home(request: Request):
         "index.html",
         {
             "request": request,
+            "overview_stats": [
+                {
+                    "label": "Modulos",
+                    "value": "4 operativos",
+                    "icon_path": "/static/icons/grid.svg",
+                },
+                {
+                    "label": "Plantillas",
+                    "value": "4 listas",
+                    "icon_path": "/static/icons/sheet.svg",
+                },
+                {
+                    "label": "Revision",
+                    "value": "Vista previa",
+                    "icon_path": "/static/icons/review.svg",
+                },
+                {
+                    "label": "Exportacion",
+                    "value": "XLSX final",
+                    "icon_path": "/static/icons/download.svg",
+                },
+            ],
             "tools": [
                 {
                     "name": "Coordenadas",
@@ -34,11 +56,24 @@ def home(request: Request):
                     "path": "/coordenadas",
                     "template_path": "/templates/coordenadas",
                     "theme": "green",
+                    "icon_path": "/static/icons/coordenadas.svg",
                     "meta": "Geocodificacion y validacion previa",
-                    "highlights": [
-                        "Carga planillas CSV o XLSX con columnas Ciudad y Pais.",
-                        "Valida registros antes de habilitar la descarga final.",
-                        "Entrega vista previa con precision y observaciones.",
+                    "summary_items": [
+                        {
+                            "label": "Entrada",
+                            "value": "Ciudad + Pais",
+                            "icon_path": "/static/icons/sheet.svg",
+                        },
+                        {
+                            "label": "Revision",
+                            "value": "Vista previa",
+                            "icon_path": "/static/icons/review.svg",
+                        },
+                        {
+                            "label": "Salida",
+                            "value": "XLSX final",
+                            "icon_path": "/static/icons/download.svg",
+                        },
                     ],
                 },
                 {
@@ -47,11 +82,24 @@ def home(request: Request):
                     "path": "/iata",
                     "template_path": "/templates/iata?mode=corporativo",
                     "theme": "teal",
+                    "icon_path": "/static/icons/iata.svg",
                     "meta": "3 modos de calculo y soporte IATA",
-                    "highlights": [
-                        "Segmenta entre viaje corporativo, upstream y downstream.",
-                        "Acepta rutas IATA y complementa distancia compuesta cuando aplica.",
-                        "Mantiene una misma experiencia de validacion y descarga.",
+                    "summary_items": [
+                        {
+                            "label": "Modos",
+                            "value": "3 flujos",
+                            "icon_path": "/static/icons/grid.svg",
+                        },
+                        {
+                            "label": "Entrada",
+                            "value": "IATA o ruta",
+                            "icon_path": "/static/icons/sheet.svg",
+                        },
+                        {
+                            "label": "Salida",
+                            "value": "XLSX final",
+                            "icon_path": "/static/icons/download.svg",
+                        },
                     ],
                 },
                 {
@@ -60,11 +108,24 @@ def home(request: Request):
                     "path": "/terrestre-ruta",
                     "template_path": "/templates/terrestre-ruta?mode=auto",
                     "theme": "amber",
+                    "icon_path": "/static/icons/terrestre.svg",
                     "meta": "Auto, coordenadas o direccion",
-                    "highlights": [
-                        "Opera con coordenadas o direccion, ciudad y pais.",
-                        "Entrega distancia total y duracion agregada del lote.",
-                        "Resume errores de formato antes de procesar el archivo final.",
+                    "summary_items": [
+                        {
+                            "label": "Modo",
+                            "value": "Auto o manual",
+                            "icon_path": "/static/icons/grid.svg",
+                        },
+                        {
+                            "label": "Resultado",
+                            "value": "Km + duracion",
+                            "icon_path": "/static/icons/review.svg",
+                        },
+                        {
+                            "label": "Salida",
+                            "value": "XLSX final",
+                            "icon_path": "/static/icons/download.svg",
+                        },
                     ],
                 },
                 {
@@ -73,11 +134,24 @@ def home(request: Request):
                     "path": "/maritimo",
                     "template_path": "/templates/maritimo",
                     "theme": "blue",
+                    "icon_path": "/static/icons/maritimo.svg",
                     "meta": "Exactas y proxy por mismo pais",
-                    "highlights": [
-                        "Tolera variantes de escritura y alias de paises.",
-                        "Prioriza distancia exacta y cae a Distancia Proxy si falta la ciudad.",
-                        "Exporta un XLSX limpio centrado en ciudad, pais y km.",
+                    "summary_items": [
+                        {
+                            "label": "Entrada",
+                            "value": "Puerto o ciudad",
+                            "icon_path": "/static/icons/sheet.svg",
+                        },
+                        {
+                            "label": "Fallback",
+                            "value": "Proxy por pais",
+                            "icon_path": "/static/icons/review.svg",
+                        },
+                        {
+                            "label": "Salida",
+                            "value": "Km y observacion",
+                            "icon_path": "/static/icons/download.svg",
+                        },
                     ],
                 },
             ],

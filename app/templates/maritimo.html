@@ -1,6 +1,6 @@
 {% set page_title = "Distancias Maritimas" %}
 {% extends "base.html" %}
-{% from "_ui_macros.html" import page_header, section_header %}
+{% from "_ui_macros.html" import page_header, section_header, summary_strip, warning_callout %}
 
 {% block content %}
 {{ page_header(
@@ -8,6 +8,18 @@
   "Distancias Maritimas",
   "Calcula distancia maritima por codigo de puerto o por ciudad y pais. Si solo existe el pais, el modulo intenta resolver con el puerto principal y marca Distancia Proxy cuando corresponde."
 ) }}
+
+<div class="module-context">
+  {{ summary_strip([
+    {'label': 'Entrada', 'value': 'Puerto o ciudad', 'icon_path': '/static/icons/maritimo.svg'},
+    {'label': 'Fallback', 'value': 'Proxy por pais', 'icon_path': '/static/icons/review.svg'},
+    {'label': 'Salida', 'value': 'Km y observacion', 'icon_path': '/static/icons/download.svg'},
+  ]) }}
+  {{ warning_callout(
+    "Verifica que origen y destino esten bien normalizados",
+    "Si una ciudad no existe en la base, el modulo puede resolver un puerto del mismo pais y marcarlo como Distancia Proxy para revision antes de exportar."
+  ) }}
+</div>
 
 <div class="workspace-grid">
   <form id="maritimo-form" class="card module-form-shell" enctype="multipart/form-data">

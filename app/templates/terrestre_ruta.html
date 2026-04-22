@@ -1,6 +1,6 @@
 {% set page_title = "Terrestre por ruta" %}
 {% extends "base.html" %}
-{% from "_ui_macros.html" import page_header, section_header %}
+{% from "_ui_macros.html" import page_header, section_header, summary_strip, warning_callout %}
 
 {% block content %}
 {{ page_header(
@@ -8,6 +8,18 @@
   "Terrestre por ruta",
   "Calcula distancia y duracion por carretera usando coordenadas o texto de origen y destino. Si falta la ciudad, el modulo puede apoyarse en la capital del pais."
 ) }}
+
+<div class="module-context">
+  {{ summary_strip([
+    {'label': 'Modo', 'value': 'Auto o manual', 'icon_path': '/static/icons/grid.svg'},
+    {'label': 'Resultado', 'value': 'Km y duracion', 'icon_path': '/static/icons/terrestre.svg'},
+    {'label': 'Salida', 'value': 'XLSX final', 'icon_path': '/static/icons/download.svg'},
+  ]) }}
+  {{ warning_callout(
+    "Verifica que el modo de entrada sea correcto",
+    "En coordenadas usa valores decimales. En texto completa direccion, ciudad y pais para origen y destino antes de procesar la plantilla."
+  ) }}
+</div>
 
 <div class="workspace-grid">
   <form id="terrestre-form" class="card module-form-shell" enctype="multipart/form-data">

@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 {% set current_path = request.url.path if request else '/' %}
 {% set nav_items = [
-  {'label': 'Inicio', 'path': '/', 'short': 'IN'},
-  {'label': 'Coordenadas', 'path': '/coordenadas', 'short': 'CO'},
-  {'label': 'Distancias Aereas', 'path': '/iata', 'short': 'AE'},
-  {'label': 'Terrestre por ruta', 'path': '/terrestre-ruta', 'short': 'TR'},
-  {'label': 'Distancias Maritimas', 'path': '/maritimo', 'short': 'MA'},
+  {'label': 'Inicio', 'path': '/', 'short': 'IN', 'icon_path': '/static/icons/home.svg'},
+  {'label': 'Coordenadas', 'path': '/coordenadas', 'short': 'CO', 'icon_path': '/static/icons/coordenadas.svg'},
+  {'label': 'Distancias Aereas', 'path': '/iata', 'short': 'AE', 'icon_path': '/static/icons/iata.svg'},
+  {'label': 'Terrestre por ruta', 'path': '/terrestre-ruta', 'short': 'TR', 'icon_path': '/static/icons/terrestre.svg'},
+  {'label': 'Distancias Maritimas', 'path': '/maritimo', 'short': 'MA', 'icon_path': '/static/icons/maritimo.svg'},
 ] %}
 <html lang="es">
 <head>
@@ -33,7 +33,9 @@
           {% for item in nav_items %}
           {% set is_active = current_path == item.path or (item.path != '/' and current_path.startswith(item.path)) %}
           <a class="nav-link{% if is_active %} is-active{% endif %}" href="{{ item.path }}">
-            <span class="nav-link__icon">{{ item.short }}</span>
+            <span class="nav-link__icon">
+              <img class="nav-link__icon-image" src="{{ item.icon_path }}" alt="" aria-hidden="true">
+            </span>
             <span>{{ item.label }}</span>
           </a>
           {% endfor %}

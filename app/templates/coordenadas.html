@@ -1,6 +1,6 @@
 {% set page_title = "Coordenadas" %}
 {% extends "base.html" %}
-{% from "_ui_macros.html" import page_header, section_header %}
+{% from "_ui_macros.html" import page_header, section_header, summary_strip, warning_callout %}
 
 {% block content %}
 {{ page_header(
@@ -8,6 +8,18 @@
   "Coordenadas",
   "Sube un archivo .xlsx o .csv con columnas Ciudad y Pais para obtener latitud y longitud listas para uso operativo y trazabilidad."
 ) }}
+
+<div class="module-context">
+  {{ summary_strip([
+    {'label': 'Entrada', 'value': 'Ciudad + Pais', 'icon_path': '/static/icons/coordenadas.svg'},
+    {'label': 'Revision', 'value': 'Hasta 200 filas', 'icon_path': '/static/icons/review.svg'},
+    {'label': 'Salida', 'value': 'XLSX validado', 'icon_path': '/static/icons/download.svg'},
+  ]) }}
+  {{ warning_callout(
+    "Verifica que el archivo venga completo",
+    "Las columnas Ciudad y Pais deben venir informadas y con una escritura consistente. La vista previa marca faltantes, no encontrados y precision antes de exportar."
+  ) }}
+</div>
 
 <div class="workspace-grid">
   <form id="coordenadas-form" class="card module-form-shell" enctype="multipart/form-data">

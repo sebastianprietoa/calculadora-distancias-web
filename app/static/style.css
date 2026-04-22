@@ -122,26 +122,17 @@ button,
   text-decoration: none;
 }
 
-.brand-mark {
-  width: 52px;
-  height: 52px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 18px;
-  font-family: 'Manrope', sans-serif;
-  font-size: 1rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  color: var(--gt-bg);
-  background: linear-gradient(160deg, var(--gt-primary), #59ffb0);
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.07), 0 16px 36px rgba(0, 234, 120, 0.22);
+.brand-logo {
+  width: 72px;
+  height: auto;
+  display: block;
+  flex-shrink: 0;
 }
 
 .brand-lockup strong {
   display: block;
   font-family: 'Manrope', sans-serif;
-  font-size: 1.85rem;
+  font-size: 1.7rem;
   line-height: 1.05;
 }
 
@@ -149,9 +140,10 @@ button,
   display: block;
   margin-top: 4px;
   color: var(--gt-text-muted);
-  font-size: 0.82rem;
-  letter-spacing: 0.1em;
+  font-size: 0.74rem;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
+  max-width: 160px;
 }
 
 .sidebar-group {

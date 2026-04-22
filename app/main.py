@@ -5,7 +5,7 @@ from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-from app.routes import coordenadas, iata, terrestre_ruta
+from app.routes import coordenadas, iata, maritimo, terrestre_ruta
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 TEMPLATES_DIR = BASE_DIR / "app" / "templates"
@@ -17,6 +17,7 @@ templates = Jinja2Templates(directory=str(TEMPLATES_DIR))
 
 app.include_router(coordenadas.router)
 app.include_router(iata.router)
+app.include_router(maritimo.router)
 app.include_router(terrestre_ruta.router)
 
 
@@ -41,6 +42,11 @@ def home(request: Request):
                     "name": "Terrestre por ruta",
                     "description": "Consulta distancia y duración por carretera usando OSRM.",
                     "path": "/terrestre-ruta",
+                },
+                {
+                    "name": "Distancias Maritimas",
+                    "description": "Busca distancia maritima entre puertos por codigo o por ciudad y pais.",
+                    "path": "/maritimo",
                 },
             ],
         },

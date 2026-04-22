@@ -7,9 +7,11 @@ from fastapi import UploadFile
 from app.main import healthcheck
 from app.routes.coordenadas import _json_safe_df, _safe_json_float
 from app.routes.iata import _numeric_series
+from app.routes.maritimo import _build_template_df as _build_maritimo_template_df
 from app.routes.terrestre_ruta import _build_template_df
 from app.services.coordenadas_service import CoordenadasService
 from app.services.iata_service import IATAService
+from app.services.maritimo_service import MaritimoService
 from app.services.terrestre_ruta_service import TerrestreRutaService
 from app.utils.excel import dataframe_to_excel_bytes, read_uploaded_table, validate_extension
 from app.utils.validators import parse_float_in_range, require_columns
@@ -369,3 +371,184 @@ def test_iata_service_city_country_supports_spanish_country_names(monkeypatch):
     assert upstream_result["IATA_origen_norm"] == "MAD"
     assert downstream_result["Estado"] == "OK"
     assert downstream_result["IATA_destino_norm"] == "EZE"
+
+
+def _sample_maritimo_pairs_df() -> pd.DataFrame:
+    return pd.DataFrame(
+        [
+            {
+                "pair_key": "ARBUE__CLSAI",
+                "origin_portcode": "ARBUE",
+                "origin_port_name": "Buenos Aires",
+                "origin_country_code": "AR",
+                "origin_country": "Argentina",
+                "destination_portcode": "CLSAI",
+                "destination_port_name": "San Antonio",
+                "destination_country_code": "CL",
+                "destination_country": "Chile",
+                "distance_nm": 2936.86,
+                "status": "ok",
+                "Function": None,
+            },
+            {
+                "pair_key": "CLSAI__ARBUE",
+                "origin_portcode": "CLSAI",
+                "origin_port_name": "San Antonio",
+                "origin_country_code": "CL",
+                "origin_country": "Chile",
+                "destination_portcode": "ARBUE",
+                "destination_port_name": "Buenos Aires",
+                "destination_country_code": "AR",
+                "destination_country": "Argentina",
+                "distance_nm": 2966.87,
+                "status": "ok",
+                "Function": None,
+            },
+            {
+                "pair_key": "ARBUE__MXLZC",
+                "origin_portcode": "ARBUE",
+                "origin_port_name": "Buenos Aires",
+                "origin_country_code": "AR",
+                "origin_country": "Argentina",
+                "destination_portcode": "MXLZC",
+                "destination_port_name": "Lázaro Cárdenas",
+                "destination_country_code": "MX",
+                "destination_country": "Mexico",
+                "distance_nm": 6604.03,
+                "status": "ok",
+                "Function": "1-------",
+            },
+            {
+                "pair_key": "ARBUE__MXZLO",
+                "origin_portcode": "ARBUE",
+                "origin_port_name": "Buenos Aires",
+                "origin_country_code": "AR",
+                "origin_country": "Argentina",
+                "destination_portcode": "MXZLO",
+                "destination_port_name": "Manzanillo",
+                "destination_country_code": "MX",
+                "destination_country": "Mexico",
+                "distance_nm": 6483.03,
+                "status": "ok",
+                "Function": "1-34----",
+            },
+            {
+                "pair_key": "ARBUE__NLAMS",
+                "origin_portcode": "ARBUE",
+                "origin_port_name": "Buenos Aires",
+                "origin_country_code": "AR",
+                "origin_country": "Argentina",
+                "destination_portcode": "NLAMS",
+                "destination_port_name": "Amsterdam",
+                "destination_country_code": "NL",
+                "destination_country": "Netherlands",
+                "distance_nm": 6379.08,
+                "status": "ok",
+                "Function": None,
+            },
+            {
+                "pair_key": "ARBUE__NLAML",
+                "origin_portcode": "ARBUE",
+                "origin_port_name": "Buenos Aires",
+                "origin_country_code": "AR",
+                "origin_country": "Argentina",
+                "destination_portcode": "NLAML",
+                "destination_port_name": "Ameland",
+                "destination_country_code": "NL",
+                "destination_country": "Netherlands",
+                "distance_nm": 6300.0,
+                "status": "ok",
+                "Function": "1--4----",
+            },
+        ]
+    )
+
+
+def test_maritimo_service_resolves_valid_portcodes():
+    service = MaritimoService(pairs_df=_sample_maritimo_pairs_df())
+    df = pd.DataFrame([{"Codigo_puerto_origen": "arbue", "Codigo_puerto_destino": "clsai"}])
+
+    result = service.process(df).iloc[0]
+
+    assert result["Estado"] == "OK"
+    assert result["Puerto_origen_codigo_resuelto"] == "ARBUE"
+    assert result["Puerto_destino_codigo_resuelto"] == "CLSAI"
+    assert result["Metodo_resolucion_origen"] == "codigo"
+    assert result["Metodo_resolucion_destino"] == "codigo"
+    assert result["Distancia_nm"] == 2936.86
+    assert result["Distancia_km"] == round(2936.86 * 1.852, 2)
+
+
+def test_maritimo_service_matches_city_country_with_typos():
+    service = MaritimoService(pairs_df=_sample_maritimo_pairs_df())
+    df = pd.DataFrame(
+        [
+            {
+                "Ciudad_origen": "Buenos Airez",
+                "Pais_origen": "Argentina",
+                "Ciudad_destino": "Lazaro Cardenas",
+                "Pais_destino": "Mexico",
+            }
+        ]
+    )
+
+    result = service.process(df).iloc[0]
+
+    assert result["Estado"] == "OK"
+    assert result["Puerto_origen_codigo_resuelto"] == "ARBUE"
+    assert result["Puerto_destino_codigo_resuelto"] == "MXLZC"
+    assert result["Metodo_resolucion_origen"] == "ciudad_pais"
+    assert result["Metodo_resolucion_destino"] == "ciudad_pais"
+    assert result["Coincidencia_origen_pct"] >= 84
+    assert result["Coincidencia_destino_pct"] >= 84
+
+
+def test_maritimo_service_uses_principal_port_when_only_country_is_provided():
+    service = MaritimoService(pairs_df=_sample_maritimo_pairs_df())
+    df = pd.DataFrame([{"Pais_origen": "Argentina", "Pais_destino": "Nederland"}])
+
+    result = service.process(df).iloc[0]
+
+    assert result["Estado"] == "OK"
+    assert result["Puerto_origen_codigo_resuelto"] == "ARBUE"
+    assert result["Puerto_destino_codigo_resuelto"] == "NLAMS"
+    assert result["Metodo_resolucion_origen"] == "pais_principal"
+    assert result["Metodo_resolucion_destino"] == "pais_principal"
+    assert "puerto principal" in result["Observacion_origen"].lower()
+    assert "puerto principal" in result["Observacion_destino"].lower()
+
+
+def test_maritimo_service_falls_back_to_city_country_when_portcode_is_invalid():
+    service = MaritimoService(pairs_df=_sample_maritimo_pairs_df())
+    df = pd.DataFrame(
+        [
+            {
+                "Codigo_puerto_origen": "ARB",
+                "Ciudad_origen": "Buenos Aires",
+                "Pais_origen": "Argentina",
+                "Codigo_puerto_destino": "XXXXX",
+                "Ciudad_destino": "San Antonio",
+                "Pais_destino": "Chile",
+            }
+        ]
+    )
+
+    result = service.process(df).iloc[0]
+
+    assert result["Estado"] == "OK"
+    assert result["Puerto_origen_codigo_resuelto"] == "ARBUE"
+    assert result["Puerto_destino_codigo_resuelto"] == "CLSAI"
+    assert "codigo de puerto" in result["Observacion_origen"].lower()
+    assert "codigo de puerto" in result["Observacion_destino"].lower()
+
+
+def test_maritimo_template_builder_contains_expected_columns():
+    columns = list(_build_maritimo_template_df().columns)
+    assert columns == [
+        "Codigo_puerto_origen",
+        "Ciudad_origen",
+        "Pais_origen",
+        "Codigo_puerto_destino",
+        "Ciudad_destino",
+        "Pais_destino",
+    ]

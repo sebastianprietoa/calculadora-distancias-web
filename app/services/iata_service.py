@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 from pathlib import Path
 from time import sleep
 import unicodedata
@@ -13,6 +14,9 @@ from app.utils.validators import is_blank
 BASE_DIR = Path(__file__).resolve().parents[2]
 MASTER_FILE = BASE_DIR / "data" / "masters" / "aeropuertos_maestra.csv"
 SUPPLEMENTAL_MASTER_FILE = BASE_DIR / "data" / "masters" / "aeropuertos_supplemental.csv"
+AIRPORT_API_BASE_URL = os.getenv("IATA_API_BASE_URL", "https://www.iatageo.com/v2").rstrip("/")
+AIRPORT_API_TIMEOUT = 20
+AIRPORT_API_CACHE_MISS = object()
 
 
 class IATAService:
@@ -42,6 +46,7 @@ class IATAService:
     def __init__(self) -> None:
         self.master_df = pd.read_csv(MASTER_FILE)
         self.master_df["iata_norm"] = self.master_df["iata"].astype(str).str.strip().str.upper()
+        self._airport_api_cache: dict[str, dict | None] = {}
         self._load_supplemental_airports()
         self._inject_missing_airports()
 
@@ -88,7 +93,7 @@ class IATAService:
         text = unicodedata.normalize("NFKD", text)
         return "".join(ch for ch in text if not unicodedata.combining(ch))
 
-    def _lookup_airport(self, iata_code: str | None) -> dict | None:
+    def _lookup_airport_from_master(self, iata_code: str | None) -> dict | None:
         if is_blank(iata_code):
             return None
         iata_norm = str(iata_code).strip().upper()
@@ -97,6 +102,68 @@ class IATAService:
         if not match.empty:
             return match.iloc[0].to_dict()
         return None
+
+    def _lookup_airport_from_api(self, iata_code: str | None) -> dict | None:
+        if is_blank(iata_code):
+            return None
+
+        iata_norm = str(iata_code).strip().upper()
+        iata_norm = self.iata_aliases.get(iata_norm, iata_norm)
+        cached = self._airport_api_cache.get(iata_norm, AIRPORT_API_CACHE_MISS)
+        if cached is not AIRPORT_API_CACHE_MISS:
+            return cached
+
+        try:
+            response = requests.get(
+                f"{AIRPORT_API_BASE_URL}/airports/iata/{iata_norm}",
+                timeout=AIRPORT_API_TIMEOUT,
+            )
+            if response.status_code != 200:
+                self._airport_api_cache[iata_norm] = None
+                return None
+
+            payload = response.json()
+            data = payload.get("data") if isinstance(payload, dict) else None
+            coords = data.get("coordinates") if isinstance(data, dict) else None
+            latitude = coords.get("latitude") if isinstance(coords, dict) else None
+            longitude = coords.get("longitude") if isinstance(coords, dict) else None
+            if data is None or latitude is None or longitude is None:
+                self._airport_api_cache[iata_norm] = None
+                return None
+
+            airport = {
+                "iata": iata_norm,
+                "iata_norm": iata_norm,
+                "airport_name": data.get("name"),
+                "city": None,
+                "country": None,
+                "lat": float(latitude),
+                "lon": float(longitude),
+                "source": "api",
+            }
+            self._airport_api_cache[iata_norm] = airport
+            return airport
+        except (requests.RequestException, ValueError, TypeError, AttributeError):
+            self._airport_api_cache[iata_norm] = None
+            return None
+
+    def _merge_airport_records(self, primary: dict, secondary: dict | None) -> dict:
+        if secondary is None:
+            return primary
+
+        merged = dict(primary)
+        for field in ["airport_name", "city", "country", "lat", "lon"]:
+            if is_blank(merged.get(field)) and not is_blank(secondary.get(field)):
+                merged[field] = secondary[field]
+        return merged
+
+    def _lookup_airport(self, iata_code: str | None) -> dict | None:
+        api_airport = self._lookup_airport_from_api(iata_code)
+        master_airport = self._lookup_airport_from_master(iata_code)
+
+        if api_airport is not None:
+            return self._merge_airport_records(api_airport, master_airport)
+        return master_airport
 
     def _lookup_airport_by_city_country(self, city: str | None, country: str | None) -> dict | None:
         city_norm = self._normalize_text(city)

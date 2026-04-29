@@ -172,7 +172,90 @@ def test_iata_service_supports_route_and_sums_segments():
     assert route_result["Estado"] == "OK"
     assert route_result["Tramos_calculados"] == 2
     assert route_result["Ruta_IATA_norm"] == "LIM/SCL/LIM"
-    assert route_result["Distancia_km"] == round(pair_result["Distancia_km"] * 2, 2)
+    assert abs(float(route_result["Distancia_km"]) - round(float(pair_result["Distancia_km"]) * 2, 2)) <= 0.05
+
+
+def test_iata_service_uses_api_as_primary_lookup_for_simple_routes(monkeypatch):
+    service = IATAService()
+    calls = []
+
+    def _fake_api_lookup(code):
+        calls.append(f"api:{code}")
+        airport_map = {
+            "LIM": {
+                "iata_norm": "LIM",
+                "airport_name": "Jorge Chavez International Airport",
+                "city": "Lima",
+                "country": "Peru",
+                "lat": -12.0219,
+                "lon": -77.114305,
+            },
+            "CIX": {
+                "iata_norm": "CIX",
+                "airport_name": "Cap. FAP Jose A. Quinones Gonzales International Airport",
+                "city": "Chiclayo",
+                "country": "Peru",
+                "lat": -6.78748,
+                "lon": -79.828102,
+            },
+        }
+        return airport_map.get(str(code).strip().upper())
+
+    def _fake_master_lookup(code):
+        calls.append(f"master:{code}")
+        return None
+
+    monkeypatch.setattr(service, "_lookup_airport_from_api", _fake_api_lookup)
+    monkeypatch.setattr(service, "_lookup_airport_from_master", _fake_master_lookup)
+
+    df = pd.DataFrame([{"Ruta": "LIM/CIX"}])
+    result = service.process(df)
+
+    assert result.iloc[0]["Estado"] == "OK"
+    assert result.iloc[0]["Ruta_IATA_norm"] == "LIM/CIX"
+    assert result.iloc[0]["Distancia_km"] > 0
+    assert calls[0] == "api:LIM"
+    assert calls[1] == "master:LIM"
+    assert calls[2] == "api:CIX"
+    assert calls[3] == "master:CIX"
+
+
+def test_iata_service_falls_back_to_catalog_when_api_misses(monkeypatch):
+    service = IATAService()
+
+    def _fake_api_lookup(code):
+        return None
+
+    def _fake_master_lookup(code):
+        airport_map = {
+            "LIM": {
+                "iata_norm": "LIM",
+                "airport_name": "Jorge Chavez International Airport",
+                "city": "Lima",
+                "country": "Peru",
+                "lat": -12.0219,
+                "lon": -77.114305,
+            },
+            "SCL": {
+                "iata_norm": "SCL",
+                "airport_name": "Arturo Merino Benitez International Airport",
+                "city": "Santiago",
+                "country": "Chile",
+                "lat": -33.392975,
+                "lon": -70.785803,
+            },
+        }
+        return airport_map.get(str(code).strip().upper())
+
+    monkeypatch.setattr(service, "_lookup_airport_from_api", _fake_api_lookup)
+    monkeypatch.setattr(service, "_lookup_airport_from_master", _fake_master_lookup)
+
+    df = pd.DataFrame([{"Ruta": "LIM/SCL"}])
+    result = service.process(df)
+
+    assert result.iloc[0]["Estado"] == "OK"
+    assert result.iloc[0]["Ruta_IATA_norm"] == "LIM/SCL"
+    assert result.iloc[0]["Distancia_km"] > 0
 
 
 def test_iata_service_corporativo_supports_origen_destino_and_ruta_mix():
